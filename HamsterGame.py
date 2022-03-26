@@ -226,15 +226,15 @@ def is_valid_spell(spell, hand):
     return True
 
 def choose_health_to_gold(difficulty):
-    rate = 2
+    rate = 1
     if difficulty == "easy":
-        rate = 2
+        rate = 0.5
     if difficulty == "normal":
-        rate = 4
+        rate = 1
     if difficulty == "hard":
-        rate = 6
+        rate = 2
     if difficulty == "impossible":
-        rate = 8
+        rate = 4
     return rate
 
 def choose_starting_health(difficulty):
@@ -367,7 +367,7 @@ while True:
 
     # new encounter loop
     while player_health > 0:
-        if player_battles_fought > 0:
+        if player_battles_fought > 2:
             print("\n")
             print("Welcome to the shop!")
             play_music_loop('music_shop.mp3')
@@ -384,10 +384,12 @@ while True:
                     print("\n")
                     play_sound(sound_player_heal)
                     player_health += player_shop_bonus
+                    time.sleep(2)
                 else:
                     print("You lose!")
                     print("Better luck next time!")
                     print("\n")
+                    time.sleep(2)
                 player_shop_bonus = 0
 
             choose_buy_health = input("Would you like to buy some health? (yes/no): ")
@@ -405,6 +407,7 @@ while True:
                         print("You can't afford that much health!")
                     elif health_to_buy == 0:
                         print("Second thoughts? No worries, see you next time!")
+                        time.sleep(4)
                         break
                     elif health_to_buy == max_buy_health:
                         print("Wow! Big spender!")
@@ -413,12 +416,14 @@ while True:
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
                         player_shop_bonus = health_to_buy
+                        time.sleep(4)
                         break
                     else:
                         print("Thank you for your purchase!")
                         play_sound(sound_player_heal)
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
+                        time.sleep(4)
                         break
             else:
                 print("\n")
@@ -436,10 +441,12 @@ while True:
                         print("\n")
                         play_sound(sound_player_sell)
                         player_gold += player_black_market_bonus
+                        time.sleep(2)
                     else:
                         print("You lose!")
                         print("Better luck next time!")
                         print("\n")
+                        time.sleep(2)
                     player_shop_bonus = 0
 
                 choose_sell_health = input("Would you like to sell some health? (yes/no): ")
@@ -456,19 +463,24 @@ while True:
                             print("You can't sell all your health!")
                         elif health_to_sell == 0:
                             print("Understandable. Have a nice day.")
+                            time.sleep(4)
                             break
                         elif health_to_sell == max_sell_health:
                             print("Wow! That's a lot of health to sell!")
                             print("Don't go to the shop and come see me next time for a chance to win bonus gold!")
                             play_sound(sound_player_sell)
                             player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health // 2)
+                            time.sleep(4)
                             break
                         else:
                             print("Thank you for your sale!")
                             play_sound(sound_player_sell)
                             player_health -= health_to_sell
                             player_gold += health_to_sell * (player_gold_to_health // 2)
+                            time.sleep(4)
                             break
+        else:
+            print("It looks like the shop will open soon!")
 
         current_enemy = make_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool)
         current_enemy_health = current_enemy.get_health()
@@ -480,8 +492,9 @@ while True:
         current_enemy_level = current_enemy.get_level()
         print("\n")
         play_music_loop('music_wilderness.mp3')
-        print("You're out exploring the wilderness...")
-        time.sleep(5)
+        print("Day %s" % (player_battles_fought + 1))
+        print("You're out scrounging for food in the wilderness...")
+        time.sleep(4)
         print("When suddenly!")
         play_music('music_encounter.mp3')
         time.sleep(4)
@@ -538,13 +551,13 @@ while True:
                 play_sound(sound_enemy_attack)
                 time.sleep(1)
                 play_sound(sound_damage)
-                time.sleep(2)
+                time.sleep(1)
 
                 print("You attack for %s!" % (player_power))
                 play_sound(sound_player_attack)
                 time.sleep(1)
                 play_sound(sound_damage)
-                time.sleep(2)
+                time.sleep(1)
 
             elif current_enemy_action == "defend" and player_action == "attack":
                 print("The %s defends for %s!" % (current_enemy_name, current_enemy_power))
@@ -562,12 +575,12 @@ while True:
 
                     print("You do %s damage!" % (player_damage))
                     play_sound(sound_damage)
-                    time.sleep(2)
+                    time.sleep(1)
 
                 else:
                     print("The %s blocks your attack!" % (current_enemy_name))
                     play_sound(sound_damage)
-                    time.sleep(2)
+                    time.sleep(1)
 
 
             elif current_enemy_action == "attack" and player_action == "defend":
@@ -587,13 +600,13 @@ while True:
 
                     print("You take %s damage!" % (current_enemy_damage))
                     play_sound(sound_damage)
-                    time.sleep(2)
+                    time.sleep(1)
 
                 else:
                     player_total_damage_blocked += current_enemy_power
                     print("You block the attack!")
                     play_sound(sound_damage)
-                    time.sleep(2)
+                    time.sleep(1)
 
             else:
                 print("You both defend!")

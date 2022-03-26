@@ -16,10 +16,10 @@ def enemy_level_pool_init(difficulty):
                 [2, 0.25],
                 [3, 0.00]]
     if difficulty == "normal":
-        return [[0, 0.25],
-                [1, 0.25],
-                [2, 0.25],
-                [3, 0.25]]
+        return [[0, 0.10],
+                [1, 0.20],
+                [2, 0.50],
+                [3, 0.20]]
     if difficulty == "hard":
         return [[0, 0.00],
                 [1, 0.25],
@@ -92,9 +92,9 @@ def enemy_health_pool_init(difficulty):
                 [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
-                [8, 0.0],
-                [9, 0.0],
-                [10, 1.0]]
+                [8, 0.3],
+                [9, 0.3],
+                [10, 0.4]]
 
 def enemy_power_pool_init(difficulty):
     if difficulty == "easy":
@@ -138,9 +138,9 @@ def enemy_power_pool_init(difficulty):
                 [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
-                [8, 0.0],
-                [9, 0.0],
-                [10, 1.0]]
+                [8, 0.3],
+                [9, 0.3],
+                [10, 0.4]]
 
 def player_power_pool_init():
     return [[1, 0.1],
@@ -301,50 +301,73 @@ def play_sound(sound):
     sound.play()
 
 # Testing Area
-pygame.init()
-pygame.mixer.init()
-sound_damage = pygame.mixer.Sound('sound_damage.wav')
-
-sound_enemy_attack = pygame.mixer.Sound('sound_enemy_attack.wav')
-sound_enemy_defend = pygame.mixer.Sound('sound_enemy_defend.wav')
-
-sound_player_attack = pygame.mixer.Sound('sound_player_attack.wav')
-sound_player_defend = pygame.mixer.Sound('sound_player_defend.wav')
-
-sound_player_heal = pygame.mixer.Sound('sound_player_heal.wav')
-sound_player_select = pygame.mixer.Sound('sound_player_select.wav')
-sound_player_spell = pygame.mixer.Sound('sound_player_spell.wav')
-sound_player_sell = pygame.mixer.Sound('sound_player_sell.wav')
-
-enemy_level_pool = []
-enemy_species_pool = []
-enemy_trait_pool = []
-enemy_health_pool = []
-enemy_power_pool = []
-
-player_power_pool = []
-player_shop_bonus_pool = []
-player_gold_to_health = 2
-player_shop_bonus = 0
-player_black_market_bonus = 0
-player_health = 50
-
-player_gold = 0
-player_hand = []
-player_spell = []
-player_action = ""
-player_seed = ""
-player_difficulty = ""
-player_battles_fought = 0
-player_total_damage_inflicted = 0
-player_total_damage_taken = 0
-player_total_damage_blocked = 0
-player_battle_lengths = []
-
 while True:
+
+    pygame.init()
+    pygame.mixer.init()
+    sound_damage = pygame.mixer.Sound('sound_damage.wav')
+
+    sound_enemy_attack = pygame.mixer.Sound('sound_enemy_attack.wav')
+    sound_enemy_defend = pygame.mixer.Sound('sound_enemy_defend.wav')
+
+    sound_player_attack = pygame.mixer.Sound('sound_player_attack.wav')
+    sound_player_defend = pygame.mixer.Sound('sound_player_defend.wav')
+
+    sound_player_heal = pygame.mixer.Sound('sound_player_heal.wav')
+    sound_player_select = pygame.mixer.Sound('sound_player_select.wav')
+    sound_player_spell = pygame.mixer.Sound('sound_player_spell.wav')
+    sound_player_sell = pygame.mixer.Sound('sound_player_sell.wav')
+
+    enemy_level_pool = []
+    enemy_species_pool = []
+    enemy_trait_pool = []
+    enemy_health_pool = []
+    enemy_power_pool = []
+
+    player_power_pool = []
+    player_shop_bonus_pool = []
+    player_gold_to_health = 2
+    player_shop_bonus = 0
+    player_black_market_bonus = 0
+    player_health = 50
+
+    player_gold = 0
+    player_hand = []
+    player_spell = []
+    player_action = ""
+    player_seed = ""
+    player_difficulty = ""
+    player_battles_fought = 0
+    player_total_damage_inflicted = 0
+    player_total_damage_taken = 0
+    player_total_damage_blocked = 0
+    player_battle_lengths = []
+
+
     print("\n")
-    print("Welcome to the Critter Battle Simulator!")
+    print("Welcome to the Hamster Game Demo!")
     play_music_loop('music_title.mp3')
+
+    print("\n")
+    print("You will play as a hamster mage trying to collect as much gold as possible.")
+    print("You earn gold by defeating other creatures who are trying to stop you.")
+    print("\n")
+    print("When in battle, you must first choose whether to attack or defend.")
+    print("You will have a hand of spell components for each encounter that you can use to craft your spell.")
+    print("In your spell, you can chain components together if they differ by 1.")
+    print("Valid spells include: [10], [2 3 4 3], [9 10 9], [1 2 3 4 5 4 3 2 1]")
+    print("Spell components that you don't use will remain in your hand until you have cleared the area.")
+    print("\n")
+    print("You will journey through ten areas, with three creatures in each.")
+    print("At the end of each area, you will come across a town with some shops.")
+    print("\n")
+    print("If you are running low on health, you can spend your gold to heal.")
+    print("However, you are scored based on how much gold you have, so spend wisely.")
+    print("On the other hand, if you are running low on gold, you can spend your health.")
+    print("However, this may result in a quicker defeat for you, so spend wisely.")
+    print("\n")
+    print("Good luck, and have fun!")
+    print("\n")
 
     player_difficulty = input("Enter difficulty (easy, normal, hard, impossible): ")
     if not player_difficulty:
@@ -368,7 +391,7 @@ while True:
 
     # new encounter loop
     while player_health > 0:
-        if player_battles_fought > 2:
+        if player_battles_fought != 0 and (player_battles_fought % 3 == 0):
             print("You head to the town to do some shopping...")
             time.sleep(3)
             print("\n")
@@ -401,8 +424,10 @@ while True:
                 player_black_market_bonus = 0
                 max_buy_health = player_gold // player_gold_to_health
                 print("\n")
+                print("Your gold: %s." % (player_gold))
+                print("Your health: %s." % (player_health))
+                print("\n")
                 print("The rate is %s gold for 1 health." % (player_gold_to_health))
-                print("You have %s gold." % (player_gold))
                 print("You can buy a maximum of %s health." % (max_buy_health))
                 while True:
                     print("\n")
@@ -420,6 +445,9 @@ while True:
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
                         player_shop_bonus = health_to_buy // 2
+                        print("\n")
+                        print("You now have %s health and %s gold!" % (player_health, player_gold))
+                        print("\n")
                         time.sleep(4)
                         break
                     else:
@@ -427,6 +455,9 @@ while True:
                         play_sound(sound_player_heal)
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
+                        print("\n")
+                        print("You now have %s health and %s gold!" % (player_health, player_gold))
+                        print("\n")
                         time.sleep(4)
                         break
             else:
@@ -459,7 +490,7 @@ while True:
                     max_sell_health = player_health - 1
                     print("\n")
                     print("The rate is 1 health for %s gold..." % (player_gold_to_health / 2))
-                    print("You have %s health..." % (player_health))
+                    print("You currently have %s health..." % (player_health))
                     print("You can sell a maximum of %s health..." % (max_sell_health))
                     while True:
                         print("\n")
@@ -475,6 +506,8 @@ while True:
                             print("Tell you what, if you don't visit the health shop tomorrow and come here instead...")
                             print("I'll give you a chance to win some bonus gold...")
                             play_sound(sound_player_sell)
+                            player_health -= health_to_sell
+                            player_gold += health_to_sell * (player_gold_to_health / 2)
                             player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health / 2)
                             time.sleep(4)
                             break
@@ -497,13 +530,13 @@ while True:
         print("\n")
         play_music_loop('music_wilderness.mp3')
         print("Day %s" % (player_battles_fought + 1))
-        print("You're out scrounging for food in the wilderness...")
+        print("You journey onward into the wilderness...")
         time.sleep(4)
         print("When suddenly!")
         play_music('music_encounter.mp3')
         time.sleep(4)
 
-        print("You encounter a %s (Level %s)!" % (current_enemy_name, current_enemy_level + 1))
+        print("A Level %s %s blocks your path!" % (current_enemy_level + 1, current_enemy_name))
         play_enemy_music(current_enemy.get_species().get_name())
         time.sleep(2)
 
@@ -540,7 +573,7 @@ while True:
                 spell_str = input("Craft your spell: ")
                 player_spell = [int(num) for num in spell_str.split()]
                 if not is_valid_spell(player_spell, player_hand):
-                    print("That's not a spell! Numbers in your spell must only be one apart and can only be used once from your hand.")
+                    print("That's not a spell! Spell components can only differ by one and can only be pulled once from your hand.")
 
             play_sound(sound_player_spell)
             time.sleep(2)
@@ -653,7 +686,7 @@ while True:
                 print("\n")
                 time.sleep(3)
 
-                input("Time to head back...")
+                input("Press any key to continue...")
 
                 player_battle_lengths.append(player_num_turns)
                 break

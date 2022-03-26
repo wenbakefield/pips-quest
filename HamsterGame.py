@@ -359,6 +359,7 @@ while True:
         player_seed = str((random.choice(words)).decode('UTF-8'))
 
     print("Selected seed: %s" % (player_seed))
+    print("\n")
 
     random.seed(player_seed)
 
@@ -368,6 +369,8 @@ while True:
     # new encounter loop
     while player_health > 0:
         if player_battles_fought > 2:
+            print("You head to the town to do some shopping...")
+            time.sleep(3)
             print("\n")
             print("Welcome to the shop!")
             play_music_loop('music_shop.mp3')
@@ -376,6 +379,7 @@ while True:
                 print("\n")
                 print("My favorite customer!")
                 print("Ready for a chance to win bonus health?")
+                time.sleep(1)
                 print("Flipping a coin...")
                 time.sleep(3)
                 if choose_from(player_shop_bonus_pool) == 1:
@@ -427,24 +431,25 @@ while True:
                         break
             else:
                 print("\n")
-                print("Welcome to the black market!")
+                print("Welcome to the black market...")
                 play_music_loop('music_black_market.mp3')
                 if player_black_market_bonus > 0:
                     print("\n")
-                    print("My favorite customer!")
+                    print("My favorite customer...")
                     print("Ready for a chance to win bonus gold?")
+                    time.sleep(1)
                     print("Flipping a coin...")
                     time.sleep(3)
                     if choose_from(player_shop_bonus_pool) == 1:
-                        print("You win!")
-                        print("Here's %s gold on the house!" % (player_black_market_bonus))
+                        print("You win...")
+                        print("Here's %s gold..." % (player_black_market_bonus))
                         print("\n")
                         play_sound(sound_player_sell)
                         player_gold += player_black_market_bonus
                         time.sleep(2)
                     else:
-                        print("You lose!")
-                        print("Better luck next time!")
+                        print("You lose...")
+                        print("Better luck next time...")
                         print("\n")
                         time.sleep(2)
                     player_shop_bonus = 0
@@ -453,34 +458,33 @@ while True:
                 if choose_sell_health == "yes":
                     max_sell_health = player_health - 1
                     print("\n")
-                    print("The rate is 1 health for %s gold." % (player_gold_to_health // 2))
-                    print("You have %s health." % (player_health))
-                    print("You can sell a maximum of %s health." % (max_sell_health))
+                    print("The rate is 1 health for %s gold..." % (player_gold_to_health // 2))
+                    print("You have %s health..." % (player_health))
+                    print("You can sell a maximum of %s health..." % (max_sell_health))
                     while True:
                         print("\n")
                         health_to_sell = int(input("How much health would you like to sell? "))
                         if health_to_sell > max_sell_health:
-                            print("You can't sell all your health!")
+                            print("You can't sell all your health...")
                         elif health_to_sell == 0:
-                            print("Understandable. Have a nice day.")
+                            print("Understandable. Have a nice day...")
                             time.sleep(4)
                             break
                         elif health_to_sell == max_sell_health:
-                            print("Wow! That's a lot of health to sell!")
-                            print("Don't go to the shop and come see me next time for a chance to win bonus gold!")
+                            print("Wow... That's a lot of health to part with...")
+                            print("Tell you what, if you don't visit the health shop tomorrow and come here instead...")
+                            print("I'll give you a chance to win some bonus gold...")
                             play_sound(sound_player_sell)
                             player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health // 2)
                             time.sleep(4)
                             break
                         else:
-                            print("Thank you for your sale!")
+                            print("Thank you for your business...")
                             play_sound(sound_player_sell)
                             player_health -= health_to_sell
                             player_gold += health_to_sell * (player_gold_to_health // 2)
                             time.sleep(4)
                             break
-        else:
-            print("It looks like the shop will open soon!")
 
         current_enemy = make_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool)
         current_enemy_health = current_enemy.get_health()
@@ -501,24 +505,29 @@ while True:
 
         print("You encounter a %s (Level %s)!" % (current_enemy_name, current_enemy_level + 1))
         play_enemy_music(current_enemy.get_species().get_name())
+        time.sleep(2)
 
         player_battles_fought += 1
         player_num_turns = 0
         # battle loop
         while True:
             print("\n")
-
+            
             print("The %s's Health: %s" % (current_enemy_name, current_enemy_health))
             print("Your Health: %s" % (player_health))
+            time.sleep(1)
 
             current_enemy_action = choose_from(current_enemy_action_pool)
-            print("The enemy is going to %s!" % (current_enemy_action))
+            print("It looks like they're going to %s!" % (current_enemy_action))
+            time.sleep(1)
+
             current_enemy_power = choose_from(enemy_power_pool)
 
             print("\n")
 
             player_hand = draw_hand(player_hand, player_power_pool)
             print("Your current hand is: %s" % (' '.join([str(card) for card in player_hand])))
+            time.sleep(1)
 
             while True:
                 player_action = input("Would you like to attack or defend?: ")
@@ -641,9 +650,10 @@ while True:
                 print("\n")
                 print("You got %s gold!" % (current_enemy_gold_drop))
                 print("You now have %s gold." % (player_gold))
+                print("\n")
                 time.sleep(3)
 
-                input("Time to head back to town...")
+                input("Time to head back...")
 
                 player_battle_lengths.append(player_num_turns)
                 break

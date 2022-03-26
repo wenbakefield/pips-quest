@@ -419,7 +419,7 @@ while True:
                         play_sound(sound_player_heal)
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
-                        player_shop_bonus = health_to_buy
+                        player_shop_bonus = health_to_buy // 2
                         time.sleep(4)
                         break
                     else:
@@ -458,7 +458,7 @@ while True:
                 if choose_sell_health == "yes":
                     max_sell_health = player_health - 1
                     print("\n")
-                    print("The rate is 1 health for %s gold..." % (player_gold_to_health // 2))
+                    print("The rate is 1 health for %s gold..." % (player_gold_to_health / 2))
                     print("You have %s health..." % (player_health))
                     print("You can sell a maximum of %s health..." % (max_sell_health))
                     while True:
@@ -475,14 +475,14 @@ while True:
                             print("Tell you what, if you don't visit the health shop tomorrow and come here instead...")
                             print("I'll give you a chance to win some bonus gold...")
                             play_sound(sound_player_sell)
-                            player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health // 2)
+                            player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health / 2)
                             time.sleep(4)
                             break
                         else:
                             print("Thank you for your business...")
                             play_sound(sound_player_sell)
                             player_health -= health_to_sell
-                            player_gold += health_to_sell * (player_gold_to_health // 2)
+                            player_gold += health_to_sell * (player_gold_to_health / 2)
                             time.sleep(4)
                             break
 

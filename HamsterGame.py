@@ -433,7 +433,7 @@ while playing == "yes":
         while True:
             print("\n")
 
-            print("%s's Health: %s" % (current_enemy_name, current_enemy_health))
+            print("The %s's Health: %s" % (current_enemy_name, current_enemy_health))
             print("Your Health: %s" % (player_health))
 
             current_enemy_action = choose_from(current_enemy_action_pool)
@@ -479,7 +479,7 @@ while playing == "yes":
 
                 if player_power > current_enemy_power:
                     player_damage = abs(current_enemy_power - player_power)
-                    current_enemy_health = current_enemy_health - player_damage
+                    current_enemy_health -= player_damage
 
                     player_total_damage_inflicted += player_damage
 
@@ -493,7 +493,7 @@ while playing == "yes":
 
                 if current_enemy_power > player_power:
                     current_enemy_damage = abs(player_power - current_enemy_power)
-                    current_enemy_health = player_health - current_enemy_damage
+                    player_health -= current_enemy_damage
 
                     player_total_damage_taken += current_enemy_damage
 

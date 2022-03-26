@@ -1,6 +1,7 @@
 import random
 import requests
 import statistics
+import time
 
 from Species import Species
 from Trait import Trait
@@ -152,6 +153,20 @@ def player_power_pool_init():
             [9, 0.1],
             [10, 0.1]]
 
+def player_shop_bonus_pool_init(difficulty):
+    if difficulty == "easy":
+        return [[0, 0.45],
+                [1, 0.55]]
+    if difficulty == "normal":
+        return [[0, 0.65],
+                [1, 0.35]]
+    if difficulty == "hard":
+        return [[0, 0.85],
+                [1, 0.15]]
+    if difficulty == "impossible":
+        return [[0, 0.99],
+                [1, 0.01]]
+
 def choose_from(pool):
     r, s = random.random(), 0
     for item in pool:
@@ -241,6 +256,7 @@ def choose_difficulty(player_difficulty):
     global enemy_power_pool
 
     global player_power_pool
+    global player_shop_bonus_pool
     global player_gold_to_health
     global player_health
 
@@ -251,6 +267,7 @@ def choose_difficulty(player_difficulty):
     enemy_power_pool = enemy_power_pool_init(player_difficulty)
 
     player_power_pool = player_power_pool_init()
+    player_shop_bonus_pool = player_shop_bonus_pool_init(player_difficulty)
     player_gold_to_health = choose_health_to_gold(player_difficulty)
     player_health = choose_starting_health(player_difficulty)
 
@@ -262,6 +279,7 @@ enemy_health_pool = []
 enemy_power_pool = []
 
 player_power_pool = []
+player_shop_bonus_pool = []
 player_gold_to_health = 2
 player_shop_bonus = 0
 player_black_market_bonus = 0
@@ -309,11 +327,24 @@ while playing == "yes":
             print("Welcome to the shop!")
 
             if player_shop_bonus > 0:
+                print("\n")
                 print("My favorite customer!")
-                print("Here's your bonus")
+                print("Ready for a chance to win bonus health?")
+                print("Flipping a coin...")
+                if choose_from(player_shop_bonus_pool) == 1:
+                    print("You win!")
+                    print("Here's %s health on the house!" % (player_shop_bonus))
+                    print("\n")
+                    player_health += player_shop_bonus
+                else:
+                    print("You lose!")
+                    print("Better luck next time!")
+                    print("\n")
+                player_shop_bonus = 0
 
             choose_buy_health = input("Would you like to buy some health? (yes/no): ")
             if choose_buy_health == "yes":
+                player_black_market_bonus = 0
                 max_buy_health = player_gold // player_gold_to_health
                 print("\n")
                 print("The rate is %s gold for 1 health." % (player_gold_to_health))
@@ -326,13 +357,39 @@ while playing == "yes":
                         print("You can't afford that much health!")
                     elif health_to_buy == 0:
                         print("Second thoughts? No worries, see you next time!")
+                        break
+                    elif health_to_buy == max_buy_health:
+                        print("Wow! Big spender!")
+                        print("Come see me next time for a chance to win bonus health!")
+                        player_health += health_to_buy
+                        player_gold -= health_to_buy * player_gold_to_health
+                        player_shop_bonus = health_to_buy
+                        break
                     else:
                         print("Thank you for your purchase!")
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
+                        break
             else:
                 print("\n")
                 print("Welcome to the black market!")
+
+                if player_black_market_bonus > 0:
+                    print("\n")
+                    print("My favorite customer!")
+                    print("Ready for a chance to win bonus gold?")
+                    print("Flipping a coin...")
+                    if choose_from(player_shop_bonus_pool) == 1:
+                        print("You win!")
+                        print("Here's %s gold on the house!" % (player_black_market_bonus))
+                        print("\n")
+                        player_gold += player_black_market_bonus
+                    else:
+                        print("You lose!")
+                        print("Better luck next time!")
+                        print("\n")
+                    player_shop_bonus = 0
+
                 choose_sell_health = input("Would you like to sell some health? (yes/no): ")
                 if choose_sell_health == "yes":
                     max_sell_health = player_health - 1
@@ -344,19 +401,20 @@ while playing == "yes":
                         print("\n")
                         health_to_sell = int(input("How much health would you like to sell? "))
                         if health_to_sell > max_sell_health:
-                            print("You'll die if you sell that much health!")
+                            print("You can't sell all your health!")
                         elif health_to_sell == 0:
                             print("Understandable. Have a nice day.")
+                            break
                         elif health_to_sell == max_sell_health:
                             print("Wow! That's a lot of health to sell!")
-                            print("Wow! That's a lot of health to sell!")
+                            print("Don't go to the shop and come see me next time for a chance to win bonus gold!")
+                            player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health // 2)
+                            break
                         else:
                             print("Thank you for your purchase!")
-                            player_health += health_to_buy
-
-
-
-
+                            player_health -= health_to_sell
+                            player_gold += health_to_sell * (player_gold_to_health // 2)
+                            break
 
         current_enemy = make_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool)
         current_enemy_health = current_enemy.get_health()
@@ -478,7 +536,7 @@ while playing == "yes":
     print("\n")
     print("Difficulty: %s" % (player_difficulty))
     print("Seed: %s" % (player_seed))
-    print("Score: %s remaining gold" % (player_gold))
+    print("Score: %s" % (player_gold))
     print("\n")
     print("Battles fought: %s" % (player_battles_fought))
     print("Average turns per battle: %s" % (statistics.mean(player_battle_lengths)))

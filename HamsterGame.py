@@ -2,6 +2,7 @@ import random
 import requests
 import statistics
 import time
+import pygame
 
 from Species import Species
 from Trait import Trait
@@ -271,7 +272,50 @@ def choose_difficulty(player_difficulty):
     player_gold_to_health = choose_health_to_gold(player_difficulty)
     player_health = choose_starting_health(player_difficulty)
 
+def play_enemy_music(species):
+    file_name = ''
+    if species == "Bat":
+        file_name = 'music_bat.mp3'
+    if species == "Bullfrog":
+        file_name = 'music_bullfrog.mp3'
+    if species == "Meerkat":
+        file_name = 'music_meerkat.mp3'
+    if species == "Rat":
+        file_name = 'music_rat.mp3'
+    if species == "Spider":
+        file_name = 'music_spider.mp3'
+    play_music_loop(file_name)
+
+def play_music_loop(file_name):
+    pygame.mixer.music.load(file_name)
+    pygame.mixer.music.play(-1)
+
+def play_music(file_name):
+    pygame.mixer.music.load(file_name)
+    pygame.mixer.music.play()
+
+def stop_music():
+    pygame.mixer.music.stop()
+
+def play_sound(sound):
+    sound.play()
+
 # Testing Area
+pygame.init()
+pygame.mixer.init()
+sound_damage = pygame.mixer.Sound('sound_damage.wav')
+
+sound_enemy_attack = pygame.mixer.Sound('sound_enemy_attack.wav')
+sound_enemy_defend = pygame.mixer.Sound('sound_enemy_defend.wav')
+
+sound_player_attack = pygame.mixer.Sound('sound_player_attack.wav')
+sound_player_defend = pygame.mixer.Sound('sound_player_defend.wav')
+
+sound_player_heal = pygame.mixer.Sound('sound_player_heal.wav')
+sound_player_select = pygame.mixer.Sound('sound_player_select.wav')
+sound_player_spell = pygame.mixer.Sound('sound_player_spell.wav')
+sound_player_sell = pygame.mixer.Sound('sound_player_sell.wav')
+
 enemy_level_pool = []
 enemy_species_pool = []
 enemy_trait_pool = []
@@ -296,10 +340,11 @@ player_total_damage_inflicted = 0
 player_total_damage_taken = 0
 player_total_damage_blocked = 0
 player_battle_lengths = []
-playing = "yes"
 
-while playing == "yes":
+while True:
+    print("\n")
     print("Welcome to the Critter Battle Simulator!")
+    play_music_loop('music_title.mp3')
 
     player_difficulty = input("Enter difficulty (easy, normal, hard, impossible): ")
     if not player_difficulty:
@@ -325,16 +370,19 @@ while playing == "yes":
         if player_battles_fought > 0:
             print("\n")
             print("Welcome to the shop!")
+            play_music_loop('music_shop.mp3')
 
             if player_shop_bonus > 0:
                 print("\n")
                 print("My favorite customer!")
                 print("Ready for a chance to win bonus health?")
                 print("Flipping a coin...")
+                time.sleep(3)
                 if choose_from(player_shop_bonus_pool) == 1:
                     print("You win!")
                     print("Here's %s health on the house!" % (player_shop_bonus))
                     print("\n")
+                    play_sound(sound_player_heal)
                     player_health += player_shop_bonus
                 else:
                     print("You lose!")
@@ -361,28 +409,32 @@ while playing == "yes":
                     elif health_to_buy == max_buy_health:
                         print("Wow! Big spender!")
                         print("Come see me next time for a chance to win bonus health!")
+                        play_sound(sound_player_heal)
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
                         player_shop_bonus = health_to_buy
                         break
                     else:
                         print("Thank you for your purchase!")
+                        play_sound(sound_player_heal)
                         player_health += health_to_buy
                         player_gold -= health_to_buy * player_gold_to_health
                         break
             else:
                 print("\n")
                 print("Welcome to the black market!")
-
+                play_music_loop('music_black_market.mp3')
                 if player_black_market_bonus > 0:
                     print("\n")
                     print("My favorite customer!")
                     print("Ready for a chance to win bonus gold?")
                     print("Flipping a coin...")
+                    time.sleep(3)
                     if choose_from(player_shop_bonus_pool) == 1:
                         print("You win!")
                         print("Here's %s gold on the house!" % (player_black_market_bonus))
                         print("\n")
+                        play_sound(sound_player_sell)
                         player_gold += player_black_market_bonus
                     else:
                         print("You lose!")
@@ -408,10 +460,12 @@ while playing == "yes":
                         elif health_to_sell == max_sell_health:
                             print("Wow! That's a lot of health to sell!")
                             print("Don't go to the shop and come see me next time for a chance to win bonus gold!")
+                            play_sound(sound_player_sell)
                             player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health // 2)
                             break
                         else:
-                            print("Thank you for your purchase!")
+                            print("Thank you for your sale!")
+                            play_sound(sound_player_sell)
                             player_health -= health_to_sell
                             player_gold += health_to_sell * (player_gold_to_health // 2)
                             break
@@ -425,7 +479,15 @@ while playing == "yes":
         current_enemy_name = current_enemy.get_name()
         current_enemy_level = current_enemy.get_level()
         print("\n")
+        play_music_loop('music_wilderness.mp3')
+        print("You're out exploring the wilderness...")
+        time.sleep(5)
+        print("When suddenly!")
+        play_music('music_encounter.mp3')
+        time.sleep(4)
+
         print("You encounter a %s (Level %s)!" % (current_enemy_name, current_enemy_level + 1))
+        play_enemy_music(current_enemy.get_species().get_name())
 
         player_battles_fought += 1
         player_num_turns = 0
@@ -458,6 +520,8 @@ while playing == "yes":
                 if not is_valid_spell(player_spell, player_hand):
                     print("That's not a spell! Numbers in your spell must only be one apart and can only be used once from your hand.")
 
+            play_sound(sound_player_spell)
+            time.sleep(2)
             player_hand = remove_spell_from_hand(player_spell, player_hand)
             player_power = sum(player_spell)
 
@@ -471,11 +535,24 @@ while playing == "yes":
                 player_total_damage_taken += current_enemy_power
 
                 print("The %s attacks for %s!" % (current_enemy_name, current_enemy_power))
+                play_sound(sound_enemy_attack)
+                time.sleep(1)
+                play_sound(sound_damage)
+                time.sleep(2)
+
                 print("You attack for %s!" % (player_power))
+                play_sound(sound_player_attack)
+                time.sleep(1)
+                play_sound(sound_damage)
+                time.sleep(2)
 
             elif current_enemy_action == "defend" and player_action == "attack":
                 print("The %s defends for %s!" % (current_enemy_name, current_enemy_power))
+                play_sound(sound_enemy_defend)
+                time.sleep(1)
                 print("You attack for %s!" % (player_power))
+                play_sound(sound_player_attack)
+                time.sleep(1)
 
                 if player_power > current_enemy_power:
                     player_damage = abs(current_enemy_power - player_power)
@@ -484,12 +561,23 @@ while playing == "yes":
                     player_total_damage_inflicted += player_damage
 
                     print("You do %s damage!" % (player_damage))
+                    play_sound(sound_damage)
+                    time.sleep(2)
+
                 else:
                     print("The %s blocks your attack!" % (current_enemy_name))
+                    play_sound(sound_damage)
+                    time.sleep(2)
+
 
             elif current_enemy_action == "attack" and player_action == "defend":
                 print("You defend for %s!" % (player_power))
+                play_sound(sound_player_defend)
+                time.sleep(1)
+
                 print("The %s attacks for %s!" % (current_enemy_name, current_enemy_power))
+                play_sound(sound_enemy_attack)
+                time.sleep(1)
 
                 if current_enemy_power > player_power:
                     current_enemy_damage = abs(player_power - current_enemy_power)
@@ -498,35 +586,51 @@ while playing == "yes":
                     player_total_damage_taken += current_enemy_damage
 
                     print("You take %s damage!" % (current_enemy_damage))
+                    play_sound(sound_damage)
+                    time.sleep(2)
+
                 else:
                     player_total_damage_blocked += current_enemy_power
                     print("You block the attack!")
+                    play_sound(sound_damage)
+                    time.sleep(2)
 
             else:
                 print("You both defend!")
+                play_sound(sound_player_defend)
+                time.sleep(1)
+                play_sound(sound_enemy_defend)
+                time.sleep(1)
                 print("Nothing happens...")
+                time.sleep(2)
 
             player_num_turns += 1
 
             player_action = ""
             player_spell = []
 
-            
+            if player_health <= 0:
+                print("\n")
+                print("You were defeated!")
+                play_music('music_game_over.mp3')
+                time.sleep(3)
+
+                player_battle_lengths.append(player_num_turns)
+                break
+
             if current_enemy_health <= 0:
                 print("\n")
                 print("The %s was defeated!" % (current_enemy_name))
+                play_music('music_win.mp3')
+                time.sleep(4)
 
                 player_gold += current_enemy_gold_drop
                 print("\n")
                 print("You got %s gold!" % (current_enemy_gold_drop))
                 print("You now have %s gold." % (player_gold))
+                time.sleep(3)
 
-                player_battle_lengths.append(player_num_turns)
-                break
-
-            if player_health <= 0:
-                print("\n")
-                print("You were defeated!")
+                input("Time to head back to town...")
 
                 player_battle_lengths.append(player_num_turns)
                 break
@@ -552,3 +656,5 @@ while playing == "yes":
     print("Thanks for playing!")
     print("\n")
     playing = input("Would you like to play again? (yes/no): ")
+    if playing == "no":
+        break

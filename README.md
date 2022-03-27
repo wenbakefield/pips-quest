@@ -8,4 +8,4 @@ Install dependencies: pip install requests, pip install pygame
 
 Download the source code: https://github.com/wenbakefield/HamsterGame/archive/refs/heads/master.zip
 
-Unzip and open HamsterGame.py
+Unzip and run HamsterGame.py

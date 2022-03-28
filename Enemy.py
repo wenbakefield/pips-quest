@@ -1,24 +1,33 @@
 from Species import Species
 
 class Enemy:
-    def __init__(self, level, species, trait, health):
+    def __init__(self, level, species, trait, max_health, current_health, base_attack, base_defense, current_power, current_action, gold):
         self.level = level
         self.species = species
         self.trait = trait
-        self.health = health
+        self.max_health = max_health
+        self.current_health = current_health
+        self.base_attack = base_attack
+        self.base_defense = base_defense
+        self.current_power = current_power
+        self.current_action = current_action
+        self.gold = gold
+
     def __repr__(self):
-        return "<Enemy |Level:%s |Species:%s |Trait:%s |Health:%s >" % (self.level,
+        return "<Enemy |Level:%s |Species:%s |Trait:%s |Max Health:%s |Current Health:%s |Base Attack:%s |Base Defense:%s |Current Power:%s |Current Action:%s |Gold:%s >" % (self.level,
                                                                           self.species, 
                                                                           self.trait, 
-                                                                          self.health)
+                                                                          self.max_health,
+                                                                          self.current_health,
+                                                                          self.base_attack,
+                                                                          self.base_defense,
+                                                                          self.current_power,
+                                                                          self.current_action,
+                                                                          self.gold)
     def __str__(self):
-        return "%s %s (Level: %s | Health: %s)" % (self.trait, 
-                                                   self.species, 
-                                                   self.level + 1,
-                                                   self.get_health())
-    def __eq__(self, other):
-        if isinstance(other, Enemy):
-            return self.level == other.level and self.species == other.species and self.trait == other.trait and self.health == other.health
+        return "%s %s (Level: %s)" % (self.trait, 
+                                        self.species, 
+                                        self.level)
 
     def get_level(self):
         return self.level
@@ -29,21 +38,47 @@ class Enemy:
     def get_trait(self):
         return self.trait
 
-    def get_health(self):
-        return sum(self.health) + self.species.get_health_mod(self.level) + self.trait.get_health_mod()
+    def get_max_health(self):
+        return self.max_health
 
-    def get_attack(self):
-        return self.species.get_attack_mod(self.level) + self.trait.get_attack_mod()
+    def get_current_health(self):
+        return self.current_health
 
-    def get_defense(self):
-        return self.species.get_defense_mod(self.level) + self.trait.get_defense_mod()
+    def get_base_attack(self):
+        return self.base_attack
+
+    def get_base_defense(self):
+        return self.base_defense
+
+    def get_current_power(self):
+        return self.current_power
+
+    def get_current_action(self):
+        return self.current_action
+
+    def get_gold(self):
+        return self.gold
 
     def get_action_pool(self):
         return self.species.get_action_pool()
 
-    def get_gold_drop(self):
-        return self.species.get_gold_drop(self.level)
+    def set_current_health(self, health):
+        self.current_health = health
 
-    def get_name(self):
+    def set_current_power(self, power):
+        self.current_power = power
+
+    def set_current_action(self, action):
+        self.current_action = action
+
+    def change_current_health(self, amount):
+        self.current_health += amount
+
+    def is_dead(self):
+        return self.current_health <= 0
+
+    def print_name(self):
         return self.trait.get_name() + " " + self.species.get_name()
 
+    def print_stats(self):
+        return "Level: " + str(self.level) + " | Health: " + str(self.current_health) + " | Intent: " + str(self.current_action)

@@ -23,7 +23,7 @@
   <ItemGroup>
     <Compile Include="Enemy.py" />
     <Compile Include="HamsterGame.py" />
-    <Compile Include="Hamster.py">
+    <Compile Include="Player.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Species.py">

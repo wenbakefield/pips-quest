@@ -7,6 +7,7 @@ import pygame
 from Species import Species
 from Trait import Trait
 from Enemy import Enemy
+from Player import Player
 
 # initialize pools
 def enemy_level_pool_init(difficulty):
@@ -39,16 +40,66 @@ def enemy_species_pool_init():
             [Species("Spider"), 0.2]]
 
 def enemy_trait_pool_init():
-    return [[Trait("Reserved"), 0.1],
-            [Trait("Brave"), 0.1],
-            [Trait("Reckless"), 0.1],
-            [Trait("Cocky"), 0.1],
-            [Trait("Buff"), 0.1],
-            [Trait("Cheerful"), 0.1],
-            [Trait("Lonely"), 0.1],
-            [Trait("Desperate"), 0.1],
-            [Trait("Weird"), 0.1],
-            [Trait("Aloof"), 0.1]]
+    return [[Trait("Pesky", -2,-1,0),       (1/60)], 
+            [Trait("Annoying", -2,0,-1),    (1/60)], 
+            [Trait("Weak", -1,-2,0),        (1/60)], 
+            [Trait("Frail", -1,0,-2),       (1/60)], 
+            [Trait("Feeble", 0,-2,-1),      (1/60)], 
+            [Trait("Sickly", 0,-1,-2),      (1/60)], 
+            [Trait("Brash", -2,-1,1),       (1/60)], 
+            [Trait("Irritating", -2,1,-1),  (1/60)], 
+            [Trait("Cocky", -1,-2,1),       (1/60)], 
+            [Trait("Lonely", -1,1,-2),      (1/60)], 
+            [Trait("Desperate", 1,-2,-1),   (1/60)], 
+            [Trait("Skittish", 1,-1,-2),    (1/60)], 
+            [Trait("Shy", -2,-1,2),         (1/60)], 
+            [Trait("Coy", -2,0,1),          (1/60)], 
+            [Trait("Sheepish", -2,1,0),     (1/60)], 
+            [Trait("Nervous", -2,2,-1),     (1/60)], 
+            [Trait("Bashful", -1,-2,2),     (1/60)], 
+            [Trait("Cautious", -1,2,-2),    (1/60)], 
+            [Trait("Sloppy", 0,-2,1),       (1/60)], 
+            [Trait("Stubborn", 0,1,-2),     (1/60)], 
+            [Trait("Jittery", 1,-2,0),      (1/60)], 
+            [Trait("Jumpy", 1,0,-2),        (1/60)], 
+            [Trait("Stressed", 2,-2,-1),    (1/60)], 
+            [Trait("Frantic", 2,-1,-2),     (1/60)], 
+            [Trait("Nonchalant", -2,0,2),   (1/60)], 
+            [Trait("Aloof", -2,2,0),        (1/60)], 
+            [Trait("Haughty", -1,0,1),      (1/60)], 
+            [Trait("Indifferent", -1,1,0),  (1/60)], 
+            [Trait("Lazy", 0,-2,2),         (1/60)], 
+            [Trait("Calm", 0,-1,1),         (1/60)], 
+            [Trait("Reluctant", 0,1,-1),    (1/60)], 
+            [Trait("Oblivious", 0,2,-2),    (1/60)], 
+            [Trait("Casual", 1,-1,0),       (1/60)], 
+            [Trait("Wary", 1,0,-1),         (1/60)], 
+            [Trait("Careless", 2,-2,0),     (1/60)], 
+            [Trait("Apathetic", 2,0,-2),    (1/60)], 
+            [Trait("Placid", -2,1,2),       (1/60)], 
+            [Trait("Gentle", -2,2,1),       (1/60)], 
+            [Trait("Cool", -1,0,2),         (1/60)], 
+            [Trait("Composed", -1,2,0),     (1/60)], 
+            [Trait("Chipper", 0,-1,2),      (1/60)], 
+            [Trait("Tough", 0,2,-1),        (1/60)], 
+            [Trait("Reckless", 1,-2,2),     (1/60)], 
+            [Trait("Bold", 1,2,-2),         (1/60)], 
+            [Trait("Crazy", 2,-2,1),        (1/60)], 
+            [Trait("Lively", 2,-1,0),       (1/60)], 
+            [Trait("Vicious", 2,0,-1),      (1/60)], 
+            [Trait("Bloodthirsty", 2,1,-2), (1/60)], 
+            [Trait("Gritty", -1,1,2),       (1/60)], 
+            [Trait("Gutsy", -1,2,1),        (1/60)], 
+            [Trait("Daring", 1,-1,2),       (1/60)], 
+            [Trait("Fierce", 1,2,-1),       (1/60)], 
+            [Trait("Fearless", 2,-1,1),     (1/60)], 
+            [Trait("Dangerous", 2,1,-1),    (1/60)], 
+            [Trait("Burly", 0,1,2),         (1/60)], 
+            [Trait("Sturdy", 0,2,1),        (1/60)], 
+            [Trait("Buff", 1,0,2),          (1/60)], 
+            [Trait("Mighty", 1,2,0),        (1/60)], 
+            [Trait("Brawny", 2,0,1),        (1/60)], 
+            [Trait("Heroic", 2,1,0),        (1/60)]]
 
 def enemy_health_pool_init(difficulty):
     if difficulty == "easy":
@@ -175,24 +226,118 @@ def choose_from(pool):
         if s >= r:
             return item[0]
 
-def make_enemy(level_pool, species_pool, trait_pool, health_pool):
+def make_enemy(level_pool, species_pool, trait_pool, health_pool, power_pool):
     level = choose_from(level_pool)
     species = choose_from(species_pool)
     trait = choose_from(trait_pool)
-    health = []
-    health.append(choose_from(health_pool))
-    health.append(choose_from(health_pool))
-    enemy = Enemy(level, species, trait, health)
+
+    health = choose_from(health_pool)
+    health += choose_from(health_pool)
+    health += species.get_health_mod(level)
+    health += trait.get_health_mod()
+
+    base_attack = species.get_attack_mod(level)
+    base_attack += trait.get_attack_mod()
+
+    base_defense = species.get_defense_mod(level)
+    base_defense += trait.get_defense_mod()
+
+    power = choose_from(power_pool)
+
+    action = choose_from(species.get_action_pool())
+
+    gold = species.get_gold_drop(level)
+
+    enemy = Enemy(level, species, trait, health, health, base_attack, base_defense, power, action, gold)
     return enemy
 
-def make_enemies(num_enemies, level_pool, species_pool, trait_pool, health_pool):
-    enemies = []
-    count = 0
-    while count < num_enemies:
-        current_enemy = make_enemy(level_pool, species_pool, trait_pool, health_pool)
-        enemies.append(current_enemy)
-        count += 1
-    return enemies
+def do_battle_turn(enemy, player):
+    global game_damage_given
+    global game_damage_taken
+    global game_damage_blocked
+
+    player_action = player.get_current_action()
+    enemy_action = enemy.get_current_action()
+
+    player_power = player.get_current_power()
+    enemy_power = enemy.get_current_power()
+
+    power_difference = abs(player_power - enemy_power)
+
+    if enemy.get_current_action() == "attack" and player.get_current_action() == "attack":
+        player.change_current_health(-enemy_power)
+        enemy.change_current_health(-player_power)
+
+        game_damage_given += player.get_current_power()
+        game_damage_taken += enemy.get_current_power()
+
+        print("The %s attacks for %s!" % (enemy.print_name(), enemy_power))
+        play_sound(sound_enemy_attack)
+        time.sleep(1)
+        play_sound(sound_damage)
+        time.sleep(1)
+
+        print("You attack for %s!" % (player_power))
+        play_sound(sound_player_attack)
+        time.sleep(1)
+        play_sound(sound_damage)
+        time.sleep(1)
+
+    elif enemy_action == "defend" and player_action == "attack":
+        print("The %s defends for %s!" % (enemy.print_name(), enemy_power))
+        play_sound(sound_enemy_defend)
+        time.sleep(1)
+        print("You attack for %s!" % (player_power))
+        play_sound(sound_player_attack)
+        time.sleep(1)
+
+        if player_power > enemy_power:
+            enemy.change_current_health(-power_difference)
+            game_damage_given += power_difference
+
+            print("You do %s damage!" % (power_difference))
+            play_sound(sound_damage)
+            time.sleep(1)
+
+        else:
+            print("The %s blocks your attack!" % (enemy.print_name()))
+            play_sound(sound_damage)
+            time.sleep(1)
+
+    elif enemy_action == "attack" and player_action == "defend":
+        print("You defend for %s!" % (player_power))
+        play_sound(sound_player_defend)
+        time.sleep(1)
+
+        print("The %s attacks for %s!" % (enemy.print_name(), enemy_power))
+        play_sound(sound_enemy_attack)
+        time.sleep(1)
+
+        if enemy_power > player_power:
+            player.change_current_health(-power_difference)
+            game_damage_taken += power_difference
+
+            print("You take %s damage!" % (power_difference))
+            play_sound(sound_damage)
+            time.sleep(1)
+
+        else:
+            game_damage_blocked += enemy_power
+            print("You block the attack!")
+            play_sound(sound_damage)
+            time.sleep(1)
+
+    else:
+        print("You both defend!")
+        play_sound(sound_player_defend)
+        time.sleep(1)
+        play_sound(sound_enemy_defend)
+        time.sleep(1)
+        print("Nothing happens...")
+        time.sleep(2)
+
+    player.set_current_action("")
+    player.set_current_spell([])
 
 def draw_hand(current_player_hand, player_power_pool):
     num_cards_needed = 7 - len(current_player_hand)
@@ -249,7 +394,7 @@ def choose_starting_health(difficulty):
         health = 10
     return health
 
-def choose_difficulty(player_difficulty):
+def choose_difficulty(game_difficulty):
     global enemy_level_pool
     global enemy_species_pool
     global enemy_trait_pool
@@ -257,20 +402,20 @@ def choose_difficulty(player_difficulty):
     global enemy_power_pool
 
     global player_power_pool
-    global player_shop_bonus_pool
-    global player_gold_to_health
+    global shop_bonus_pool
+    global game_gold_to_health
     global player_health
 
-    enemy_level_pool = enemy_level_pool_init(player_difficulty)
+    enemy_level_pool = enemy_level_pool_init(game_difficulty)
     enemy_species_pool = enemy_species_pool_init()
     enemy_trait_pool = enemy_trait_pool_init()
-    enemy_health_pool = enemy_health_pool_init(player_difficulty)
-    enemy_power_pool = enemy_power_pool_init(player_difficulty)
+    enemy_health_pool = enemy_health_pool_init(game_difficulty)
+    enemy_power_pool = enemy_power_pool_init(game_difficulty)
 
     player_power_pool = player_power_pool_init()
-    player_shop_bonus_pool = player_shop_bonus_pool_init(player_difficulty)
-    player_gold_to_health = choose_health_to_gold(player_difficulty)
-    player_health = choose_starting_health(player_difficulty)
+    shop_bonus_pool = player_shop_bonus_pool_init(game_difficulty)
+    game_gold_to_health = choose_health_to_gold(game_difficulty)
+    player_health = choose_starting_health(game_difficulty)
 
 def play_enemy_music(species):
     file_name = ''
@@ -325,23 +470,24 @@ while True:
     enemy_power_pool = []
 
     player_power_pool = []
-    player_shop_bonus_pool = []
-    player_gold_to_health = 2
-    player_shop_bonus = 0
-    player_black_market_bonus = 0
+    shop_bonus_pool = []
+    game_gold_to_health = 2
+    game_shop_bonus = 0
+    game_black_market_bonus = 0
     player_health = 50
 
     player_gold = 0
     player_hand = []
     player_spell = []
     player_action = ""
-    player_seed = ""
-    player_difficulty = ""
-    player_battles_fought = 0
-    player_total_damage_inflicted = 0
-    player_total_damage_taken = 0
-    player_total_damage_blocked = 0
-    player_battle_lengths = []
+
+    game_seed = ""
+    game_difficulty = ""
+    game_battles_fought = 0
+    game_damage_given = 0
+    game_damage_taken = 0
+    game_damage_blocked = 0
+    game_battle_length_history = []
 
 
     print("\n")
@@ -369,65 +515,67 @@ while True:
     print("Good luck, and have fun!")
     print("\n")
 
-    player_difficulty = input("Enter difficulty (easy, normal, hard, impossible): ")
-    if not player_difficulty:
-        player_difficulty = "normal"
+    game_difficulty = input("Enter difficulty (easy, normal, hard, impossible): ")
+    if not game_difficulty:
+        game_difficulty = "normal"
 
-    player_seed = input("Enter a seed or leave blank for a random seed: ")
+    game_seed = input("Enter a seed or leave blank for a random seed: ")
 
-    if not player_seed:
+    if not game_seed:
         word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
         response = requests.get(word_site)
         words = response.content.splitlines()
-        player_seed = str((random.choice(words)).decode('UTF-8'))
+        game_seed = str((random.choice(words)).decode('UTF-8'))
 
-    print("Selected seed: %s" % (player_seed))
+    print("Selected seed: %s" % (game_seed))
     print("\n")
 
-    random.seed(player_seed)
+    random.seed(game_seed)
 
     # initialize pools
-    choose_difficulty(player_difficulty)
+    choose_difficulty(game_difficulty)
+
+    player = Player(player_health, player_health, 0, [], 7, [], 0, "")
 
     # new encounter loop
-    while player_health > 0:
-        if player_battles_fought != 0 and (player_battles_fought % 3 == 0):
+    while player.get_current_health() > 0:
+        if game_battles_fought != 0 and (game_battles_fought % 3 == 0):
             print("You head to the town to do some shopping...")
             time.sleep(3)
             print("\n")
             print("Welcome to the shop!")
             play_music_loop('music_shop.mp3')
 
-            if player_shop_bonus > 0:
+            if game_shop_bonus > 0:
                 print("\n")
                 print("My favorite customer!")
                 print("Ready for a chance to win bonus health?")
                 time.sleep(1)
                 print("Flipping a coin...")
                 time.sleep(3)
-                if choose_from(player_shop_bonus_pool) == 1:
+                if choose_from(shop_bonus_pool) == 1:
                     print("You win!")
-                    print("Here's %s health on the house!" % (player_shop_bonus))
+                    print("Here's %s health on the house!" % (game_shop_bonus))
                     print("\n")
                     play_sound(sound_player_heal)
-                    player_health += player_shop_bonus
+                    player.change_current_health(game_shop_bonus)
                     time.sleep(2)
                 else:
                     print("You lose!")
                     print("Better luck next time!")
                     print("\n")
                     time.sleep(2)
-                player_shop_bonus = 0
+                game_shop_bonus = 0
 
             choose_buy_health = input("Would you like to buy some health? (yes/no): ")
             if choose_buy_health == "yes":
-                player_black_market_bonus = 0
-                max_buy_health = player_gold // player_gold_to_health
+                game_black_market_bonus = 0
+                max_buy_health = player.get_current_gold() // game_gold_to_health
                 print("\n")
-                print("Your gold: %s." % (player_gold))
-                print("Your health: %s." % (player_health))
+                print("Your Gold: %s" % (player.get_current_gold()))
+                print("Your Health: %s" % (player.get_current_health()))
                 print("\n")
-                print("The rate is %s gold for 1 health." % (player_gold_to_health))
+                print("The rate is %s gold for 1 health." % (game_gold_to_health))
                 print("You can buy a maximum of %s health." % (max_buy_health))
                 while True:
                     print("\n")
@@ -442,21 +590,21 @@ while True:
                         print("Wow! Big spender!")
                         print("Come see me next time for a chance to win bonus health!")
                         play_sound(sound_player_heal)
-                        player_health += health_to_buy
-                        player_gold -= health_to_buy * player_gold_to_health
-                        player_shop_bonus = health_to_buy // 2
+                        player.change_current_health(health_to_buy)
+                        player.change_current_gold(-health_to_buy * game_gold_to_health)
+                        game_shop_bonus = health_to_buy // 2
                         print("\n")
-                        print("You now have %s health and %s gold!" % (player_health, player_gold))
+                        print("You now have %s health and %s gold!" % (player.get_current_health(), player.get_current_gold()))
                         print("\n")
                         time.sleep(4)
                         break
                     else:
                         print("Thank you for your purchase!")
                         play_sound(sound_player_heal)
-                        player_health += health_to_buy
-                        player_gold -= health_to_buy * player_gold_to_health
+                        player.change_current_health(health_to_buy)
+                        player.change_current_gold(-health_to_buy * game_gold_to_health)
                         print("\n")
-                        print("You now have %s health and %s gold!" % (player_health, player_gold))
+                        print("You now have %s health and %s gold!" % (player.get_current_health(), player.get_current_gold()))
                         print("\n")
                         time.sleep(4)
                         break
@@ -464,33 +612,35 @@ while True:
                 print("\n")
                 print("Welcome to the black market...")
                 play_music_loop('music_black_market.mp3')
-                if player_black_market_bonus > 0:
+                if game_black_market_bonus > 0:
                     print("\n")
                     print("My favorite customer...")
                     print("Ready for a chance to win bonus gold?")
                     time.sleep(1)
                     print("Flipping a coin...")
                     time.sleep(3)
-                    if choose_from(player_shop_bonus_pool) == 1:
+                    if choose_from(shop_bonus_pool) == 1:
                         print("You win...")
-                        print("Here's %s gold..." % (player_black_market_bonus))
+                        print("Here's %s gold..." % (game_black_market_bonus))
                         print("\n")
                         play_sound(sound_player_sell)
-                        player_gold += player_black_market_bonus
+                        player.change_current_gold(game_black_market_bonus)
                         time.sleep(2)
                     else:
                         print("You lose...")
                         print("Better luck next time...")
                         print("\n")
                         time.sleep(2)
-                    player_shop_bonus = 0
+                    game_shop_bonus = 0
 
                 choose_sell_health = input("Would you like to sell some health? (yes/no): ")
                 if choose_sell_health == "yes":
-                    max_sell_health = player_health - 1
+                    max_sell_health = player.get_current_health() - 1
                     print("\n")
-                    print("The rate is 1 health for %s gold..." % (player_gold_to_health / 2))
-                    print("You currently have %s health..." % (player_health))
+                    print("Your Gold: %s" % (player.get_current_gold()))
+                    print("Your Health: %s" % (player.get_current_health()))
+                    print("\n")
+                    print("The rate is 1 health for %s gold..." % (game_gold_to_health / 2))
                     print("You can sell a maximum of %s health..." % (max_sell_health))
                     while True:
                         print("\n")
@@ -506,208 +656,128 @@ while True:
                             print("Tell you what, if you don't visit the health shop tomorrow and come here instead...")
                             print("I'll give you a chance to win some bonus gold...")
                             play_sound(sound_player_sell)
-                            player_health -= health_to_sell
-                            player_gold += health_to_sell * (player_gold_to_health / 2)
-                            player_black_market_bonus = (health_to_sell // 2) * (player_gold_to_health / 2)
+                            player.change_current_health(-health_to_sell)
+                            player.change_current_gold(health_to_sell * (game_gold_to_health / 2))
+                            game_black_market_bonus = (health_to_sell // 2) * (game_gold_to_health / 2)
                             time.sleep(4)
                             break
                         else:
                             print("Thank you for your business...")
                             play_sound(sound_player_sell)
-                            player_health -= health_to_sell
-                            player_gold += health_to_sell * (player_gold_to_health / 2)
+                            player.change_current_health(-health_to_sell)
+                            player.change_current_gold(health_to_sell * (game_gold_to_health / 2))
                             time.sleep(4)
                             break
 
-        current_enemy = make_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool)
-        current_enemy_health = current_enemy.get_health()
-        current_enemy_base_attack = current_enemy.get_attack()
-        current_enemy_base_defense = current_enemy.get_defense()
-        current_enemy_action_pool = current_enemy.get_action_pool()
-        current_enemy_gold_drop = current_enemy.get_gold_drop()
-        current_enemy_name = current_enemy.get_name()
-        current_enemy_level = current_enemy.get_level()
+        enemy = make_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool, enemy_power_pool)
+
         print("\n")
         play_music_loop('music_wilderness.mp3')
-        print("Day %s" % (player_battles_fought + 1))
+        print("Day %s" % (game_battles_fought + 1))
         print("You journey onward into the wilderness...")
         time.sleep(4)
         print("When suddenly!")
         play_music('music_encounter.mp3')
         time.sleep(4)
 
-        print("A Level %s %s blocks your path!" % (current_enemy_level + 1, current_enemy_name))
-        play_enemy_music(current_enemy.get_species().get_name())
+        print("A Level %s %s blocks your path!" % (enemy.get_level(), enemy.print_name()))
+        play_enemy_music(enemy.get_species().get_name())
         time.sleep(2)
 
-        player_battles_fought += 1
-        player_num_turns = 0
+        game_battles_fought += 1
+        game_battle_length = 0
         # battle loop
         while True:
             print("\n")
             
-            print("The %s's Health: %s" % (current_enemy_name, current_enemy_health))
-            print("Your Health: %s" % (player_health))
+            print("The %s's Health: %s" % (enemy.print_name(), enemy.get_current_health()))
+            print("Your Health: %s" % (player.get_current_health()))
             time.sleep(1)
 
-            current_enemy_action = choose_from(current_enemy_action_pool)
-            print("It looks like they're going to %s!" % (current_enemy_action))
+            enemy.set_current_action(choose_from(enemy.get_action_pool()))
+            print("It looks like they're going to %s!" % (enemy.get_current_action()))
             time.sleep(1)
 
-            current_enemy_power = choose_from(enemy_power_pool)
+            enemy.set_current_power(choose_from(enemy_power_pool))
 
             print("\n")
 
-            player_hand = draw_hand(player_hand, player_power_pool)
-            print("Your current hand is: %s" % (' '.join([str(card) for card in player_hand])))
+            player.draw_hand(player_power_pool)
+            print("Your current hand is: %s" % (' '.join([str(card) for card in player.get_current_hand()])))
             time.sleep(1)
 
             while True:
                 player_action = input("Would you like to attack or defend?: ")
                 if player_action == "attack" or player_action == "defend":
+                    player.set_current_action(player_action)
                     break
                 else:
                     print("Invalid action!")
 
-            while not is_valid_spell(player_spell, player_hand):
+            while True:
                 spell_str = input("Craft your spell: ")
-                player_spell = [int(num) for num in spell_str.split()]
-                if not is_valid_spell(player_spell, player_hand):
+                spell = [int(num) for num in spell_str.split()]
+
+                player.set_current_spell(spell)
+                if player.has_valid_current_spell():
+                    cast = input("Ready to cast? (yes/no): ")
+                    if cast == "yes":
+                        player.cast_spell(player_power_pool)
+                        break
+                else:
                     print("That's not a spell! Spell components can only differ by one and can only be pulled once from your hand.")
 
             play_sound(sound_player_spell)
             time.sleep(2)
-            player_hand = remove_spell_from_hand(player_spell, player_hand)
-            player_power = sum(player_spell)
-
             print("\n")
 
-            if current_enemy_action == "attack" and player_action == "attack":
-                player_health = player_health - current_enemy_power
-                current_enemy_health = current_enemy_health - player_power
+            do_battle_turn(enemy, player)
+            game_battle_length += 1
 
-                player_total_damage_inflicted += player_power
-                player_total_damage_taken += current_enemy_power
-
-                print("The %s attacks for %s!" % (current_enemy_name, current_enemy_power))
-                play_sound(sound_enemy_attack)
-                time.sleep(1)
-                play_sound(sound_damage)
-                time.sleep(1)
-
-                print("You attack for %s!" % (player_power))
-                play_sound(sound_player_attack)
-                time.sleep(1)
-                play_sound(sound_damage)
-                time.sleep(1)
-
-            elif current_enemy_action == "defend" and player_action == "attack":
-                print("The %s defends for %s!" % (current_enemy_name, current_enemy_power))
-                play_sound(sound_enemy_defend)
-                time.sleep(1)
-                print("You attack for %s!" % (player_power))
-                play_sound(sound_player_attack)
-                time.sleep(1)
-
-                if player_power > current_enemy_power:
-                    player_damage = abs(current_enemy_power - player_power)
-                    current_enemy_health -= player_damage
-
-                    player_total_damage_inflicted += player_damage
-
-                    print("You do %s damage!" % (player_damage))
-                    play_sound(sound_damage)
-                    time.sleep(1)
-
-                else:
-                    print("The %s blocks your attack!" % (current_enemy_name))
-                    play_sound(sound_damage)
-                    time.sleep(1)
-
-
-            elif current_enemy_action == "attack" and player_action == "defend":
-                print("You defend for %s!" % (player_power))
-                play_sound(sound_player_defend)
-                time.sleep(1)
-
-                print("The %s attacks for %s!" % (current_enemy_name, current_enemy_power))
-                play_sound(sound_enemy_attack)
-                time.sleep(1)
-
-                if current_enemy_power > player_power:
-                    current_enemy_damage = abs(player_power - current_enemy_power)
-                    player_health -= current_enemy_damage
-
-                    player_total_damage_taken += current_enemy_damage
-
-                    print("You take %s damage!" % (current_enemy_damage))
-                    play_sound(sound_damage)
-                    time.sleep(1)
-
-                else:
-                    player_total_damage_blocked += current_enemy_power
-                    print("You block the attack!")
-                    play_sound(sound_damage)
-                    time.sleep(1)
-
-            else:
-                print("You both defend!")
-                play_sound(sound_player_defend)
-                time.sleep(1)
-                play_sound(sound_enemy_defend)
-                time.sleep(1)
-                print("Nothing happens...")
-                time.sleep(2)
-
-            player_num_turns += 1
-
-            player_action = ""
-            player_spell = []
-
-            if player_health <= 0:
+            if player.is_dead():
                 print("\n")
                 print("You were defeated!")
                 play_music('music_game_over.mp3')
                 time.sleep(3)
 
-                player_battle_lengths.append(player_num_turns)
+                game_battle_length_history.append(game_battle_length)
                 break
 
-            if current_enemy_health <= 0:
+            if enemy.is_dead():
                 print("\n")
-                print("The %s was defeated!" % (current_enemy_name))
+                print("The %s was defeated!" % (enemy.print_name()))
                 play_music('music_win.mp3')
                 time.sleep(4)
 
-                player_gold += current_enemy_gold_drop
+                player.change_current_gold(enemy.get_gold())
                 print("\n")
-                print("You got %s gold!" % (current_enemy_gold_drop))
-                print("You now have %s gold." % (player_gold))
+                print("You got %s gold!" % (enemy.get_gold()))
+                print("You now have %s gold." % (player.get_current_gold()))
                 print("\n")
                 time.sleep(3)
 
                 input("Press any key to continue...")
 
-                player_battle_lengths.append(player_num_turns)
+                game_battle_length_history.append(game_battle_length)
                 break
 
     print("\n")
     print("Game over!")
     print("\n")
-    print("Difficulty: %s" % (player_difficulty))
-    print("Seed: %s" % (player_seed))
-    print("Score: %s" % (player_gold))
+    print("Difficulty: %s" % (game_difficulty))
+    print("Seed: %s" % (game_seed))
+    print("Score: %s" % (player.get_current_gold()))
     print("\n")
-    print("Battles fought: %s" % (player_battles_fought))
-    print("Average turns per battle: %s" % (statistics.mean(player_battle_lengths)))
+    print("Battles fought: %s" % (game_battles_fought))
+    print("Average turns per battle: %s" % (statistics.mean(game_battle_length_history)))
     print("\n")
-    print("Total damage inflicted: %s" % (player_total_damage_inflicted))
-    print("Total damage taken: %s" % (player_total_damage_taken))
-    print("Total damage blocked: %s" % (player_total_damage_blocked))
+    print("Total damage inflicted: %s" % (game_damage_given))
+    print("Total damage taken: %s" % (game_damage_taken))
+    print("Total damage blocked: %s" % (game_damage_blocked))
     print("\n")
-    print("Damage inflicted per battle: %s" % (player_total_damage_inflicted / player_battles_fought))
-    print("Damage taken per battle: %s" % (player_total_damage_taken / player_battles_fought))
-    print("Damage blocked per battle: %s" % (player_total_damage_blocked / player_battles_fought))
+    print("Damage inflicted per battle: %s" % (game_damage_given / game_battles_fought))
+    print("Damage taken per battle: %s" % (game_damage_taken / game_battles_fought))
+    print("Damage blocked per battle: %s" % (game_damage_blocked / game_battles_fought))
     print("\n")
     print("Thanks for playing!")
     print("\n")

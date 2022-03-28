@@ -1,11 +1,7 @@
 # HamsterGame
 
-To play:
+Download the latest release to play!
 
-Install Python 3: https://www.python.org/downloads/
+https://github.com/wenbakefield/HamsterGame/releases
 
-Install dependencies: pip install requests, pip install pygame
-
-Download the source code: https://github.com/wenbakefield/HamsterGame/archive/refs/heads/master.zip
-
-Unzip and run HamsterGame.py
+Assets -> Download HamsterGame.zip -> Unzip -> Open HamsterGame folder -> Run HamsterGame.exe (Windows only, sorry!)

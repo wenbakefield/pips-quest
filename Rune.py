@@ -9,11 +9,20 @@ class Rune:
         return "%s%s" % (self.element, self.power)
     def __eq__(self, other):
         if isinstance(other, Rune):
-            return self.element == other.element and self.power == other.power
+            if self.element == "A" and other.element == "A":
+                return True
+            else:
+                return self.element == other.element and self.power == other.power
 
     def get_element(self):
         return self.element
 
     def get_power(self):
         return self.power
+
+    def set_element(self, element):
+        self.element = element
+
+    def set_power(self, power):
+        self.power = power
 

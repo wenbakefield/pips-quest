@@ -104,38 +104,38 @@ def enemy_trait_pool_init():
 
 def enemy_health_pool_init(difficulty):
     if difficulty == "easy":
-        return [[1, 0.2],
-                [2, 0.2],
-                [3, 0.2],
-                [4, 0.2],
-                [5, 0.2],
+        return [[1, 1.0],
+                [2, 0.0],
+                [3, 0.0],
+                [4, 0.0],
+                [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
                 [8, 0.0],
                 [9, 0.0],
                 [10, 0.0]]
     if difficulty == "normal":
-        return [[1, 0.1],
-                [2, 0.1],
-                [3, 0.1],
-                [4, 0.1],
-                [5, 0.1],
-                [6, 0.1],
-                [7, 0.1],
-                [8, 0.1],
-                [9, 0.1],
-                [10, 0.1]]
+        return [[1, 0.0],
+                [2, 0.0],
+                [3, 0.0],
+                [4, 0.0],
+                [5, 0.0],
+                [6, 0.25],
+                [7, 0.25],
+                [8, 0.25],
+                [9, 0.25],
+                [10, 0.0]]
     if difficulty == "hard":
         return [[1, 0.0],
                 [2, 0.0],
                 [3, 0.0],
                 [4, 0.0],
                 [5, 0.0],
-                [6, 0.2],
-                [7, 0.2],
-                [8, 0.2],
-                [9, 0.2],
-                [10, 0.2]]
+                [6, 0.0],
+                [7, 0.0],
+                [8, 0.25],
+                [9, 0.25],
+                [10, 0.50]]
     if difficulty == "impossible":
         return [[1, 0.0],
                 [2, 0.0],
@@ -144,73 +144,74 @@ def enemy_health_pool_init(difficulty):
                 [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
-                [8, 0.3],
-                [9, 0.3],
-                [10, 0.4]]
+                [8, 0.0],
+                [9, 0.0],
+                [10, 1.0]]
 
 def enemy_power_pool_init(difficulty):
     if difficulty == "easy":
-        return [[1, 0.2],
-                [2, 0.2],
-                [3, 0.2],
-                [4, 0.2],
-                [5, 0.2],
+        return [[1, 0.0],
+                [2, 0.25],
+                [3, 0.50],
+                [4, 0.25],
+                [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
                 [8, 0.0],
                 [9, 0.0],
                 [10, 0.0]]
     if difficulty == "normal":
-        return [[1, 0.1],
-                [2, 0.1],
-                [3, 0.1],
-                [4, 0.1],
-                [5, 0.1],
-                [6, 0.1],
-                [7, 0.1],
-                [8, 0.1],
-                [9, 0.1],
-                [10, 0.1]]
+        return [[1, 0.0],
+                [2, 0.0],
+                [3, 0.25],
+                [4, 0.50],
+                [5, 0.25],
+                [6, 0.0],
+                [7, 0.0],
+                [8, 0.0],
+                [9, 0.0],
+                [10, 0.0]]
     if difficulty == "hard":
         return [[1, 0.0],
                 [2, 0.0],
                 [3, 0.0],
-                [4, 0.0],
-                [5, 0.0],
-                [6, 0.2],
-                [7, 0.2],
-                [8, 0.2],
-                [9, 0.2],
-                [10, 0.2]]
+                [4, 0.25],
+                [5, 0.50],
+                [6, 0.25],
+                [7, 0.0],
+                [8, 0.0],
+                [9, 0.0],
+                [10, 0.0]]
     if difficulty == "impossible":
         return [[1, 0.0],
                 [2, 0.0],
                 [3, 0.0],
                 [4, 0.0],
-                [5, 0.0],
-                [6, 0.0],
-                [7, 0.0],
-                [8, 0.3],
-                [9, 0.3],
-                [10, 0.4]]
+                [5, 0.25],
+                [6, 0.50],
+                [7, 0.25],
+                [8, 0.0],
+                [9, 0.0],
+                [10, 0.0]]
 
 def player_element_pool_init():
-    return [["F", 0.25],
-            ["A", 0.25],
-            ["I", 0.25],
-            ["E", 0.25]]
+    return [["F", 0.23],
+            ["S", 0.23],
+            ["I", 0.23],
+            ["E", 0.23],
+            ["A", 0.08]]
 
 def player_power_pool_init():
-    return [[1, 0.1],
-            [2, 0.1],
-            [3, 0.1],
-            [4, 0.1],
-            [5, 0.1],
-            [6, 0.1],
-            [7, 0.1],
-            [8, 0.1],
-            [9, 0.1],
-            [10, 0.1]]
+    return [[1, 0.25],
+            [2, 0.25],
+            [3, 0.25],
+            [4, 0.25],
+            [5, 0.0],
+            [6, 0.0],
+            [7, 0.0],
+            [8, 0.0],
+            [9, 0.0],
+            [10, 0.0]]
 
 def player_shop_bonus_pool_init(difficulty):
     if difficulty == "easy":
@@ -236,6 +237,8 @@ def choose_from(pool):
 def generate_rune(element_pool, power_pool):
     element = choose_from(element_pool)
     power = choose_from(power_pool)
+    if element == "A":
+        power = "?"
     rune = Rune(element, power)
     return rune
 
@@ -260,6 +263,7 @@ def generate_enemy(level_pool, species_pool, trait_pool, health_pool, power_pool
     action = choose_from(species.get_action_pool())
 
     gold = species.get_gold_drop(level)
+    gold += (trait.get_score() + 4)
 
     enemy = Enemy(level, species, trait, health, health, base_attack, base_defense, power, action, gold)
     return enemy
@@ -270,8 +274,9 @@ def generate_player_hand(current_player_hand, player_element_pool, player_power_
     count = 0
     while count < num_runes_needed:
         new_rune = generate_rune(player_element_pool, player_power_pool)
-        new_player_hand.append(new_rune)
-        count += 1
+        if new_rune not in new_player_hand:
+            new_player_hand.append(new_rune)
+            count += 1
     return new_player_hand
 
 def do_battle_turn(enemy, player):
@@ -367,7 +372,11 @@ def string_to_spell(spell_str):
     spell = []
     for rune_str in rune_str_list:
         element = str(rune_str[0])
-        power = int(rune_str[1:])
+        power = 0
+        if element == "A":
+            power = "?"
+        else:
+            power = int(rune_str[1:])
         rune = Rune(element, power)
         spell.append(rune)
     return spell
@@ -385,13 +394,13 @@ def choose_health_to_gold(difficulty):
     return rate
 
 def choose_starting_health(difficulty):
-    health = 50
+    health = 30
     if difficulty == "easy":
-        health = 100
-    if difficulty == "normal":
         health = 50
+    if difficulty == "normal":
+        health = 30
     if difficulty == "hard":
-        health = 25
+        health = 20
     if difficulty == "impossible":
         health = 10
     return health
@@ -476,15 +485,11 @@ while True:
     player_element_pool = []
     player_power_pool = []
     shop_bonus_pool = []
+
     game_gold_to_health = 2
     game_shop_bonus = 0
     game_black_market_bonus = 0
     player_health = 50
-
-    player_gold = 0
-    player_hand = []
-    player_spell = []
-    player_action = ""
 
     game_seed = ""
     game_difficulty = ""
@@ -494,44 +499,49 @@ while True:
     game_damage_blocked = 0
     game_battle_length_history = []
 
-
     print("\n")
     print("Welcome to the Hamster Game Demo!")
     play_music_loop('music_title.mp3')
-
-    print("\n")
-    print("You will play as a hamster mage trying to collect as much gold as possible.")
-    print("You earn gold by defeating other creatures who are trying to stop you.")
-    print("\n")
-    print("You will have a collection of runes for each encounter that you can use to craft your spell.")
-    print("Each rune has an element type and a power level.")
-    print("\n")
-    print("Offensive element types are: Fire (F) and Arcane (A)")
-    print("Defensive element types are: Ice (I) and Earth (E)")
-    print("The first rune in your spell will determine whether it is offensive or defensive.")
-    print("\n")
-    print("In your spell, you can chain runes together if their power level differs by 1.")
-    print("\n")
-    print("Valid spells include:")
-    print("F10")
-    print("A9 A8 A9 A8")
-    print("E3 F2 F3")
-    print("I4 F3 E2 A3")
-    print("I1 F2 E3 A4 F5 E4 I5")
-    print("\n")
-    print("Runes that you don't use will remain in your hand until you have cleared the area.")
-    print("\n")
-    print("You will journey through ten areas, with three creatures in each.")
-    print("At the end of each area, you will come across a town with some shops.")
-    print("\n")
-    print("If you are running low on health, you can spend your gold to heal.")
-    print("However, you are scored at the end of your adventure based on how much gold you have, so spend wisely.")
-    print("On the other hand, if you are running low on gold, you can spend your health to gain gold.")
-    print("However, this may result in a quicker defeat for you, so spend wisely.")
-    print("\n")
-    print("Good luck, and have fun!")
     print("\n")
 
+    view_rules = input("Would you like to view the rules? (y/n): ")
+    if view_rules == "y":
+        print("\n")
+        print("You will play as a hamster mage trying to collect as much gold as possible.")
+        print("You earn gold by defeating other creatures who are trying to stop you.")
+        print("\n")
+        print("You will have a collection of runes for each encounter that you can use to craft your spell.")
+        print("Each rune has an element type and a power level.")
+        print("\n")
+        print("Offensive element types are: Fire (F) and Spark (S)")
+        print("Defensive element types are: Ice (I) and Earth (E)")
+        print("The wildcard element type is: Arcane (A)")
+        print("The first rune in your spell will determine whether the spell is offensive or defensive.")
+        print("You may not use an arcane rune as the first rune in your spell.")
+        print("\n")
+        print("In your spell, you can chain runes together if their power level differs by 1.")
+        print("Arcane runes will automatically be given a power level that satisfies this rule.")
+        print("\n")
+        print("Valid spells include:")
+        print("F10")
+        print("S9 S8 S9 A?")
+        print("E3 F2 F3")
+        print("I4 F3 E2 S3")
+        print("I1 F2 A? S4 F5 E4 I5")
+        print("\n")
+        print("Runes that you don't use will remain in your hand until you have cleared the area.")
+        print("\n")
+        print("You will journey through ten areas, with three creatures in each.")
+        print("At the end of each area, you will come across a town with some shops.")
+        print("\n")
+        print("If you are running low on health, you can spend your gold to heal.")
+        print("However, you are scored at the end of your adventure based on how much gold you have, so spend wisely.")
+        print("On the other hand, if you are running low on gold, you can spend your health to gain gold.")
+        print("However, this may result in a quicker defeat for you, so spend wisely.")
+        print("\n")
+        print("Good luck, and have fun!")
+    
+    print("\n")
     game_difficulty = input("Enter difficulty (easy, normal, hard, impossible): ")
     if not game_difficulty:
         game_difficulty = "normal"
@@ -555,7 +565,7 @@ while True:
     player = Player(player_health, player_health, 0, [], 7, [], 0, "")
 
     # new encounter loop
-    while player.get_current_health() > 0:
+    while player.get_current_health() > 0 and game_battles_fought < 31:
         if game_battles_fought != 0 and (game_battles_fought % 3 == 0):
             print("You head to the town to do some shopping...")
             time.sleep(3)
@@ -734,8 +744,6 @@ while True:
                         player.cast_spell()
                         player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
                         break
-                else:
-                    print("That's not a spell! Spell components can only differ by one and can only be pulled once from your hand.")
 
             play_sound(sound_player_spell)
             time.sleep(2)
@@ -772,7 +780,10 @@ while True:
                 break
 
     print("\n")
-    print("Game over!")
+    if player.is_dead():
+        print("Game over!")
+    else:
+        print("You win!")
     print("\n")
     print("Difficulty: %s" % (game_difficulty))
     print("Seed: %s" % (game_seed))

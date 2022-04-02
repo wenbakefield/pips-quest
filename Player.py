@@ -77,7 +77,7 @@ class Player:
             self.current_action = ""
         else:
             first_rune = self.current_spell[0]
-            if first_rune.get_element() == "F" or first_rune.get_element() == "A":
+            if first_rune.get_element() == "F" or first_rune.get_element() == "S":
                 self.current_action = "attack"
             if first_rune.get_element() == "I" or first_rune.get_element() == "E":
                 self.current_action = "defend"
@@ -110,16 +110,41 @@ class Player:
     def has_valid_current_spell(self):
         if not self.current_spell:
             return False
+        if self.current_spell[0].get_element() == "A":
+            print("The first rune in your spell cannot be arcane!")
+            return False
         hand_temp = self.current_hand.copy()
         for rune in self.current_spell:
             if (rune in hand_temp):
                 hand_temp.remove(rune)
             else:
+                print("You can only use the runes in your rune bag!")
                 return False
+
+        if self.current_spell[-1].get_element() == "A":
+            wildcard_power = self.current_spell[-2].get_power() + 1
+            self.current_spell[-1].set_power(wildcard_power)
+
+        for i in range(1, len(self.current_spell) - 1):
+            if self.current_spell[i].get_element() == "A":
+                previous_rune_power = self.current_spell[i - 1].get_power()
+                next_rune_power = self.current_spell[i + 1].get_power()
+                power_difference = previous_rune_power - next_rune_power
+                if power_difference == 0:
+                    self.current_spell[i].set_power(previous_rune_power + 1)
+                elif power_difference == -2:
+                    self.current_spell[i].set_power(previous_rune_power + 1)
+                elif power_difference == 2:
+                    self.current_spell[i].set_power(previous_rune_power - 1)
+                else:
+                    print("You cannot place an arcane rune there!")
+                    return False
+
         for i in range(1, len(self.current_spell)):
             previous_rune = self.current_spell[i - 1]
             current_rune = self.current_spell[i]
             if abs(previous_rune.get_power() - current_rune.get_power()) != 1:
+                print("You can only place runes next to each other if they differ in power level by 1!")
                 return False
         return True
 

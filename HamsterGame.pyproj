@@ -24,6 +24,12 @@
   <ItemGroup>
     <Compile Include="Enemy.py" />
     <Compile Include="HamsterGame.py" />
+    <Compile Include="Area.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Encounter.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Rune.py">
       <SubType>Code</SubType>
     </Compile>

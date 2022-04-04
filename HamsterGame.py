@@ -9,6 +9,7 @@ from Trait import Trait
 from Enemy import Enemy
 from Player import Player
 from Rune import Rune
+from Encounter import Encounter
 
 # initialize pools
 def enemy_level_pool_init(difficulty):
@@ -278,94 +279,6 @@ def generate_player_hand(current_player_hand, player_element_pool, player_power_
             new_player_hand.append(new_rune)
             count += 1
     return new_player_hand
-
-def do_battle_turn(enemy, player):
-    global game_damage_given
-    global game_damage_taken
-    global game_damage_blocked
-
-    player_action = player.get_current_action()
-    enemy_action = enemy.get_current_action()
-
-    player_power = player.get_current_power()
-    enemy_power = enemy.get_current_power()
-
-    power_difference = abs(player_power - enemy_power)
-
-    if enemy.get_current_action() == "attack" and player.get_current_action() == "attack":
-        player.change_current_health(-enemy_power)
-        enemy.change_current_health(-player_power)
-
-        game_damage_given += player.get_current_power()
-        game_damage_taken += enemy.get_current_power()
-
-        print("The %s attacks for %s!" % (enemy.print_name(), enemy_power))
-        play_sound(sound_enemy_attack)
-        time.sleep(1)
-        play_sound(sound_damage)
-        time.sleep(1)
-
-        print("You attack for %s!" % (player_power))
-        play_sound(sound_player_attack)
-        time.sleep(1)
-        play_sound(sound_damage)
-        time.sleep(1)
-
-    elif enemy_action == "defend" and player_action == "attack":
-        print("The %s defends for %s!" % (enemy.print_name(), enemy_power))
-        play_sound(sound_enemy_defend)
-        time.sleep(1)
-        print("You attack for %s!" % (player_power))
-        play_sound(sound_player_attack)
-        time.sleep(1)
-
-        if player_power > enemy_power:
-            enemy.change_current_health(-power_difference)
-            game_damage_given += power_difference
-
-            print("You do %s damage!" % (power_difference))
-            play_sound(sound_damage)
-            time.sleep(1)
-
-        else:
-            print("The %s blocks your attack!" % (enemy.print_name()))
-            play_sound(sound_damage)
-            time.sleep(1)
-
-    elif enemy_action == "attack" and player_action == "defend":
-        print("You defend for %s!" % (player_power))
-        play_sound(sound_player_defend)
-        time.sleep(1)
-
-        print("The %s attacks for %s!" % (enemy.print_name(), enemy_power))
-        play_sound(sound_enemy_attack)
-        time.sleep(1)
-
-        if enemy_power > player_power:
-            player.change_current_health(-power_difference)
-            game_damage_taken += power_difference
-
-            print("You take %s damage!" % (power_difference))
-            play_sound(sound_damage)
-            time.sleep(1)
-
-        else:
-            game_damage_blocked += enemy_power
-            print("You block the attack!")
-            play_sound(sound_damage)
-            time.sleep(1)
-
-    else:
-        print("You both defend!")
-        play_sound(sound_player_defend)
-        time.sleep(1)
-        play_sound(sound_enemy_defend)
-        time.sleep(1)
-        print("Nothing happens...")
-        time.sleep(2)
-
-    player.set_current_spell([])
-    player.set_current_action()
 
 def string_to_spell(spell_str):
     rune_str_list = spell_str.split()
@@ -697,16 +610,17 @@ while True:
                             break
 
         enemy = generate_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool, enemy_power_pool)
+        player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
+
+        encounter = Encounter(enemy)
 
         print("\n")
         play_music_loop('music_wilderness.mp3')
-        print("Day %s" % (game_battles_fought + 1))
         print("You journey onward into the wilderness...")
         time.sleep(4)
         print("When suddenly!")
         play_music('music_encounter.mp3')
         time.sleep(4)
-
         print("A Level %s %s blocks your path!" % (enemy.get_level(), enemy.print_name()))
         play_enemy_music(enemy.get_species().get_name())
         time.sleep(2)
@@ -715,21 +629,14 @@ while True:
         game_battle_length = 0
         # battle loop
         while True:
+            enemy = encounter.get_current_enemy_state()
             print("\n")
-            
             print("The %s's Health: %s" % (enemy.print_name(), enemy.get_current_health()))
             print("Your Health: %s" % (player.get_current_health()))
             time.sleep(1)
-
-            enemy.set_current_action(choose_from(enemy.get_action_pool()))
             print("It looks like they're going to %s!" % (enemy.get_current_action()))
             time.sleep(1)
-
-            enemy.set_current_power(choose_from(enemy_power_pool))
-
             print("\n")
-
-            player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
             print("Your rune bag currently contains: %s" % (' '.join([str(rune) for rune in player.get_current_hand()])))
             time.sleep(1)
 
@@ -745,12 +652,13 @@ while True:
                         player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
                         break
 
+            print("Casting spell: %s" % (' '.join([str(rune) for rune in player.get_current_spell()])))
             play_sound(sound_player_spell)
             time.sleep(2)
             print("\n")
 
-            do_battle_turn(enemy, player)
-            game_battle_length += 1
+            encounter.do_turn(player)
+            encounter.display_turn()
 
             if player.is_dead():
                 print("\n")

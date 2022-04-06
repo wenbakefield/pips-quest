@@ -1,4 +1,5 @@
 from Species import Species
+import random
 
 class Enemy:
     def __init__(self, level, species, trait, max_health, current_health, base_attack, base_defense, current_power, current_action, gold):
@@ -29,6 +30,8 @@ class Enemy:
                                         self.species, 
                                         self.level)
 
+    
+    
     def get_level(self):
         return self.level
 
@@ -73,6 +76,13 @@ class Enemy:
 
     def change_current_health(self, amount):
         self.current_health += amount
+
+    def choose_action(self):
+        r, s = random.random(), 0
+        for item in self.get_action_pool():
+            s += item[1]
+            if s >= r:
+                self.set_current_action(item[0])
 
     def is_dead(self):
         return self.current_health <= 0

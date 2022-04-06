@@ -8,6 +8,8 @@ from Species import Species
 from Trait import Trait
 from Enemy import Enemy
 from Player import Player
+from Rune import Rune
+from Encounter import Encounter
 
 # initialize pools
 def enemy_level_pool_init(difficulty):
@@ -103,38 +105,38 @@ def enemy_trait_pool_init():
 
 def enemy_health_pool_init(difficulty):
     if difficulty == "easy":
-        return [[1, 0.2],
-                [2, 0.2],
-                [3, 0.2],
-                [4, 0.2],
-                [5, 0.2],
+        return [[1, 1.0],
+                [2, 0.0],
+                [3, 0.0],
+                [4, 0.0],
+                [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
                 [8, 0.0],
                 [9, 0.0],
                 [10, 0.0]]
     if difficulty == "normal":
-        return [[1, 0.1],
-                [2, 0.1],
-                [3, 0.1],
-                [4, 0.1],
-                [5, 0.1],
-                [6, 0.1],
-                [7, 0.1],
-                [8, 0.1],
-                [9, 0.1],
-                [10, 0.1]]
+        return [[1, 0.0],
+                [2, 0.0],
+                [3, 0.0],
+                [4, 0.0],
+                [5, 0.0],
+                [6, 0.25],
+                [7, 0.25],
+                [8, 0.25],
+                [9, 0.25],
+                [10, 0.0]]
     if difficulty == "hard":
         return [[1, 0.0],
                 [2, 0.0],
                 [3, 0.0],
                 [4, 0.0],
                 [5, 0.0],
-                [6, 0.2],
-                [7, 0.2],
-                [8, 0.2],
-                [9, 0.2],
-                [10, 0.2]]
+                [6, 0.0],
+                [7, 0.0],
+                [8, 0.25],
+                [9, 0.25],
+                [10, 0.50]]
     if difficulty == "impossible":
         return [[1, 0.0],
                 [2, 0.0],
@@ -143,67 +145,74 @@ def enemy_health_pool_init(difficulty):
                 [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
-                [8, 0.3],
-                [9, 0.3],
-                [10, 0.4]]
+                [8, 0.0],
+                [9, 0.0],
+                [10, 1.0]]
 
 def enemy_power_pool_init(difficulty):
     if difficulty == "easy":
-        return [[1, 0.2],
-                [2, 0.2],
-                [3, 0.2],
-                [4, 0.2],
-                [5, 0.2],
+        return [[1, 0.0],
+                [2, 0.25],
+                [3, 0.50],
+                [4, 0.25],
+                [5, 0.0],
                 [6, 0.0],
                 [7, 0.0],
                 [8, 0.0],
                 [9, 0.0],
                 [10, 0.0]]
     if difficulty == "normal":
-        return [[1, 0.1],
-                [2, 0.1],
-                [3, 0.1],
-                [4, 0.1],
-                [5, 0.1],
-                [6, 0.1],
-                [7, 0.1],
-                [8, 0.1],
-                [9, 0.1],
-                [10, 0.1]]
+        return [[1, 0.0],
+                [2, 0.0],
+                [3, 0.25],
+                [4, 0.50],
+                [5, 0.25],
+                [6, 0.0],
+                [7, 0.0],
+                [8, 0.0],
+                [9, 0.0],
+                [10, 0.0]]
     if difficulty == "hard":
         return [[1, 0.0],
                 [2, 0.0],
                 [3, 0.0],
-                [4, 0.0],
-                [5, 0.0],
-                [6, 0.2],
-                [7, 0.2],
-                [8, 0.2],
-                [9, 0.2],
-                [10, 0.2]]
+                [4, 0.25],
+                [5, 0.50],
+                [6, 0.25],
+                [7, 0.0],
+                [8, 0.0],
+                [9, 0.0],
+                [10, 0.0]]
     if difficulty == "impossible":
         return [[1, 0.0],
                 [2, 0.0],
                 [3, 0.0],
                 [4, 0.0],
-                [5, 0.0],
-                [6, 0.0],
-                [7, 0.0],
-                [8, 0.3],
-                [9, 0.3],
-                [10, 0.4]]
+                [5, 0.25],
+                [6, 0.50],
+                [7, 0.25],
+                [8, 0.0],
+                [9, 0.0],
+                [10, 0.0]]
+
+def player_element_pool_init():
+    return [["F", 0.23],
+            ["S", 0.23],
+            ["I", 0.23],
+            ["E", 0.23],
+            ["A", 0.08]]
 
 def player_power_pool_init():
-    return [[1, 0.1],
-            [2, 0.1],
-            [3, 0.1],
-            [4, 0.1],
-            [5, 0.1],
-            [6, 0.1],
-            [7, 0.1],
-            [8, 0.1],
-            [9, 0.1],
-            [10, 0.1]]
+    return [[1, 0.25],
+            [2, 0.25],
+            [3, 0.25],
+            [4, 0.25],
+            [5, 0.0],
+            [6, 0.0],
+            [7, 0.0],
+            [8, 0.0],
+            [9, 0.0],
+            [10, 0.0]]
 
 def player_shop_bonus_pool_init(difficulty):
     if difficulty == "easy":
@@ -226,7 +235,15 @@ def choose_from(pool):
         if s >= r:
             return item[0]
 
-def make_enemy(level_pool, species_pool, trait_pool, health_pool, power_pool):
+def generate_rune(element_pool, power_pool):
+    element = choose_from(element_pool)
+    power = choose_from(power_pool)
+    if element == "A":
+        power = "?"
+    rune = Rune(element, power)
+    return rune
+
+def generate_enemy(level_pool, species_pool, trait_pool, health_pool, power_pool):
     level = choose_from(level_pool)
     species = choose_from(species_pool)
     trait = choose_from(trait_pool)
@@ -247,128 +264,35 @@ def make_enemy(level_pool, species_pool, trait_pool, health_pool, power_pool):
     action = choose_from(species.get_action_pool())
 
     gold = species.get_gold_drop(level)
+    gold += (trait.get_score() + 4)
 
     enemy = Enemy(level, species, trait, health, health, base_attack, base_defense, power, action, gold)
     return enemy
 
-def do_battle_turn(enemy, player):
-    global game_damage_given
-    global game_damage_taken
-    global game_damage_blocked
-
-    player_action = player.get_current_action()
-    enemy_action = enemy.get_current_action()
-
-    player_power = player.get_current_power()
-    enemy_power = enemy.get_current_power()
-
-    power_difference = abs(player_power - enemy_power)
-
-    if enemy.get_current_action() == "attack" and player.get_current_action() == "attack":
-        player.change_current_health(-enemy_power)
-        enemy.change_current_health(-player_power)
-
-        game_damage_given += player.get_current_power()
-        game_damage_taken += enemy.get_current_power()
-
-        print("The %s attacks for %s!" % (enemy.print_name(), enemy_power))
-        play_sound(sound_enemy_attack)
-        time.sleep(1)
-        play_sound(sound_damage)
-        time.sleep(1)
-
-        print("You attack for %s!" % (player_power))
-        play_sound(sound_player_attack)
-        time.sleep(1)
-        play_sound(sound_damage)
-        time.sleep(1)
-
-    elif enemy_action == "defend" and player_action == "attack":
-        print("The %s defends for %s!" % (enemy.print_name(), enemy_power))
-        play_sound(sound_enemy_defend)
-        time.sleep(1)
-        print("You attack for %s!" % (player_power))
-        play_sound(sound_player_attack)
-        time.sleep(1)
-
-        if player_power > enemy_power:
-            enemy.change_current_health(-power_difference)
-            game_damage_given += power_difference
-
-            print("You do %s damage!" % (power_difference))
-            play_sound(sound_damage)
-            time.sleep(1)
-
-        else:
-            print("The %s blocks your attack!" % (enemy.print_name()))
-            play_sound(sound_damage)
-            time.sleep(1)
-
-    elif enemy_action == "attack" and player_action == "defend":
-        print("You defend for %s!" % (player_power))
-        play_sound(sound_player_defend)
-        time.sleep(1)
-
-        print("The %s attacks for %s!" % (enemy.print_name(), enemy_power))
-        play_sound(sound_enemy_attack)
-        time.sleep(1)
-
-        if enemy_power > player_power:
-            player.change_current_health(-power_difference)
-            game_damage_taken += power_difference
-
-            print("You take %s damage!" % (power_difference))
-            play_sound(sound_damage)
-            time.sleep(1)
-
-        else:
-            game_damage_blocked += enemy_power
-            print("You block the attack!")
-            play_sound(sound_damage)
-            time.sleep(1)
-
-    else:
-        print("You both defend!")
-        play_sound(sound_player_defend)
-        time.sleep(1)
-        play_sound(sound_enemy_defend)
-        time.sleep(1)
-        print("Nothing happens...")
-        time.sleep(2)
-
-    player.set_current_action("")
-    player.set_current_spell([])
-
-def draw_hand(current_player_hand, player_power_pool):
-    num_cards_needed = 7 - len(current_player_hand)
+def generate_player_hand(current_player_hand, player_element_pool, player_power_pool):
+    num_runes_needed = 7 - len(current_player_hand)
     new_player_hand = current_player_hand.copy()
     count = 0
-    while count < num_cards_needed:
-        new_card = choose_from(player_power_pool)
-        new_player_hand.append(new_card)
-        count += 1
+    while count < num_runes_needed:
+        new_rune = generate_rune(player_element_pool, player_power_pool)
+        if new_rune not in new_player_hand:
+            new_player_hand.append(new_rune)
+            count += 1
     return new_player_hand
 
-def remove_spell_from_hand(spell, hand):
-    hand_temp = hand.copy()
-    for card in spell:
-        if (card in hand_temp):
-            hand_temp.remove(card)
-    return hand_temp
-
-def is_valid_spell(spell, hand):
-    if not spell:
-        return False
-    hand_temp = hand.copy()
-    for card in spell:
-        if (card in hand_temp):
-            hand_temp.remove(card)
+def string_to_spell(spell_str):
+    rune_str_list = spell_str.split()
+    spell = []
+    for rune_str in rune_str_list:
+        element = str(rune_str[0])
+        power = 0
+        if element == "A":
+            power = "?"
         else:
-            return False
-    for i in range(1, len(spell)):
-        if abs(spell[i - 1] - spell[i]) != 1:
-            return False
-    return True
+            power = int(rune_str[1:])
+        rune = Rune(element, power)
+        spell.append(rune)
+    return spell
 
 def choose_health_to_gold(difficulty):
     rate = 1
@@ -383,13 +307,13 @@ def choose_health_to_gold(difficulty):
     return rate
 
 def choose_starting_health(difficulty):
-    health = 50
+    health = 30
     if difficulty == "easy":
-        health = 100
-    if difficulty == "normal":
         health = 50
+    if difficulty == "normal":
+        health = 30
     if difficulty == "hard":
-        health = 25
+        health = 20
     if difficulty == "impossible":
         health = 10
     return health
@@ -401,6 +325,7 @@ def choose_difficulty(game_difficulty):
     global enemy_health_pool
     global enemy_power_pool
 
+    global player_element_pool
     global player_power_pool
     global shop_bonus_pool
     global game_gold_to_health
@@ -412,6 +337,7 @@ def choose_difficulty(game_difficulty):
     enemy_health_pool = enemy_health_pool_init(game_difficulty)
     enemy_power_pool = enemy_power_pool_init(game_difficulty)
 
+    player_element_pool = player_element_pool_init()
     player_power_pool = player_power_pool_init()
     shop_bonus_pool = player_shop_bonus_pool_init(game_difficulty)
     game_gold_to_health = choose_health_to_gold(game_difficulty)
@@ -469,17 +395,14 @@ while True:
     enemy_health_pool = []
     enemy_power_pool = []
 
+    player_element_pool = []
     player_power_pool = []
     shop_bonus_pool = []
+
     game_gold_to_health = 2
     game_shop_bonus = 0
     game_black_market_bonus = 0
     player_health = 50
-
-    player_gold = 0
-    player_hand = []
-    player_spell = []
-    player_action = ""
 
     game_seed = ""
     game_difficulty = ""
@@ -489,32 +412,49 @@ while True:
     game_damage_blocked = 0
     game_battle_length_history = []
 
-
     print("\n")
     print("Welcome to the Hamster Game Demo!")
     play_music_loop('music_title.mp3')
-
-    print("\n")
-    print("You will play as a hamster mage trying to collect as much gold as possible.")
-    print("You earn gold by defeating other creatures who are trying to stop you.")
-    print("\n")
-    print("When in battle, you must first choose whether to attack or defend.")
-    print("You will have a hand of spell components for each encounter that you can use to craft your spell.")
-    print("In your spell, you can chain components together if they differ by 1.")
-    print("Valid spells include: [10], [2 3 4 3], [9 10 9], [1 2 3 4 5 4 3 2 1]")
-    print("Spell components that you don't use will remain in your hand until you have cleared the area.")
-    print("\n")
-    print("You will journey through ten areas, with three creatures in each.")
-    print("At the end of each area, you will come across a town with some shops.")
-    print("\n")
-    print("If you are running low on health, you can spend your gold to heal.")
-    print("However, you are scored based on how much gold you have, so spend wisely.")
-    print("On the other hand, if you are running low on gold, you can spend your health.")
-    print("However, this may result in a quicker defeat for you, so spend wisely.")
-    print("\n")
-    print("Good luck, and have fun!")
     print("\n")
 
+    view_rules = input("Would you like to view the rules? (y/n): ")
+    if view_rules == "y":
+        print("\n")
+        print("You will play as a hamster mage trying to collect as much gold as possible.")
+        print("You earn gold by defeating other creatures who are trying to stop you.")
+        print("\n")
+        print("You will have a collection of runes for each encounter that you can use to craft your spell.")
+        print("Each rune has an element type and a power level.")
+        print("\n")
+        print("Offensive element types are: Fire (F) and Spark (S)")
+        print("Defensive element types are: Ice (I) and Earth (E)")
+        print("The wildcard element type is: Arcane (A)")
+        print("The first rune in your spell will determine whether the spell is offensive or defensive.")
+        print("You may not use an arcane rune as the first rune in your spell.")
+        print("\n")
+        print("In your spell, you can chain runes together if their power level differs by 1.")
+        print("Arcane runes will automatically be given a power level that satisfies this rule.")
+        print("\n")
+        print("Valid spells include:")
+        print("F10")
+        print("S9 S8 S9 A?")
+        print("E3 F2 F3")
+        print("I4 F3 E2 S3")
+        print("I1 F2 A? S4 F5 E4 I5")
+        print("\n")
+        print("Runes that you don't use will remain in your hand until you have cleared the area.")
+        print("\n")
+        print("You will journey through ten areas, with three creatures in each.")
+        print("At the end of each area, you will come across a town with some shops.")
+        print("\n")
+        print("If you are running low on health, you can spend your gold to heal.")
+        print("However, you are scored at the end of your adventure based on how much gold you have, so spend wisely.")
+        print("On the other hand, if you are running low on gold, you can spend your health to gain gold.")
+        print("However, this may result in a quicker defeat for you, so spend wisely.")
+        print("\n")
+        print("Good luck, and have fun!")
+    
+    print("\n")
     game_difficulty = input("Enter difficulty (easy, normal, hard, impossible): ")
     if not game_difficulty:
         game_difficulty = "normal"
@@ -538,7 +478,7 @@ while True:
     player = Player(player_health, player_health, 0, [], 7, [], 0, "")
 
     # new encounter loop
-    while player.get_current_health() > 0:
+    while player.get_current_health() > 0 and game_battles_fought < 31:
         if game_battles_fought != 0 and (game_battles_fought % 3 == 0):
             print("You head to the town to do some shopping...")
             time.sleep(3)
@@ -567,8 +507,8 @@ while True:
                     time.sleep(2)
                 game_shop_bonus = 0
 
-            choose_buy_health = input("Would you like to buy some health? (yes/no): ")
-            if choose_buy_health == "yes":
+            choose_buy_health = input("Would you like to buy some health? (y/n): ")
+            if choose_buy_health == "y":
                 game_black_market_bonus = 0
                 max_buy_health = player.get_current_gold() // game_gold_to_health
                 print("\n")
@@ -633,8 +573,8 @@ while True:
                         time.sleep(2)
                     game_shop_bonus = 0
 
-                choose_sell_health = input("Would you like to sell some health? (yes/no): ")
-                if choose_sell_health == "yes":
+                choose_sell_health = input("Would you like to sell some health? (y/n): ")
+                if choose_sell_health == "y":
                     max_sell_health = player.get_current_health() - 1
                     print("\n")
                     print("Your Gold: %s" % (player.get_current_gold()))
@@ -669,17 +609,18 @@ while True:
                             time.sleep(4)
                             break
 
-        enemy = make_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool, enemy_power_pool)
+        enemy = generate_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool, enemy_power_pool)
+        player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
+
+        encounter = Encounter(enemy)
 
         print("\n")
         play_music_loop('music_wilderness.mp3')
-        print("Day %s" % (game_battles_fought + 1))
         print("You journey onward into the wilderness...")
         time.sleep(4)
         print("When suddenly!")
         play_music('music_encounter.mp3')
         time.sleep(4)
-
         print("A Level %s %s blocks your path!" % (enemy.get_level(), enemy.print_name()))
         play_enemy_music(enemy.get_species().get_name())
         time.sleep(2)
@@ -688,51 +629,36 @@ while True:
         game_battle_length = 0
         # battle loop
         while True:
+            enemy = encounter.get_current_enemy_state()
             print("\n")
-            
             print("The %s's Health: %s" % (enemy.print_name(), enemy.get_current_health()))
             print("Your Health: %s" % (player.get_current_health()))
             time.sleep(1)
-
-            enemy.set_current_action(choose_from(enemy.get_action_pool()))
             print("It looks like they're going to %s!" % (enemy.get_current_action()))
             time.sleep(1)
-
-            enemy.set_current_power(choose_from(enemy_power_pool))
-
             print("\n")
-
-            player.draw_hand(player_power_pool)
-            print("Your current hand is: %s" % (' '.join([str(card) for card in player.get_current_hand()])))
+            print("Your rune bag currently contains: %s" % (' '.join([str(rune) for rune in player.get_current_hand()])))
             time.sleep(1)
-
-            while True:
-                player_action = input("Would you like to attack or defend?: ")
-                if player_action == "attack" or player_action == "defend":
-                    player.set_current_action(player_action)
-                    break
-                else:
-                    print("Invalid action!")
 
             while True:
                 spell_str = input("Craft your spell: ")
-                spell = [int(num) for num in spell_str.split()]
+                spell = string_to_spell(spell_str)
 
                 player.set_current_spell(spell)
                 if player.has_valid_current_spell():
-                    cast = input("Ready to cast? (yes/no): ")
-                    if cast == "yes":
-                        player.cast_spell(player_power_pool)
+                    cast = input("Ready to cast? (y/n): ")
+                    if cast == "y":
+                        player.cast_spell()
+                        player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
                         break
-                else:
-                    print("That's not a spell! Spell components can only differ by one and can only be pulled once from your hand.")
 
+            print("Casting spell: %s" % (' '.join([str(rune) for rune in player.get_current_spell()])))
             play_sound(sound_player_spell)
             time.sleep(2)
             print("\n")
 
-            do_battle_turn(enemy, player)
-            game_battle_length += 1
+            encounter.do_turn(player)
+            encounter.display_turn()
 
             if player.is_dead():
                 print("\n")
@@ -762,7 +688,10 @@ while True:
                 break
 
     print("\n")
-    print("Game over!")
+    if player.is_dead():
+        print("Game over!")
+    else:
+        print("You win!")
     print("\n")
     print("Difficulty: %s" % (game_difficulty))
     print("Seed: %s" % (game_seed))
@@ -781,6 +710,6 @@ while True:
     print("\n")
     print("Thanks for playing!")
     print("\n")
-    playing = input("Would you like to play again? (yes/no): ")
-    if playing == "no":
+    playing = input("Would you like to play again? (y/n): ")
+    if playing == "n":
         break

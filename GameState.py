@@ -119,6 +119,13 @@ def choose_player_power_pool():
             [3, 0.25],
             [4, 0.25]]
 
+def choose_area_biome_pool():
+    return ["Desert",
+            "Cave",
+            "Forest",
+            "Swamp",
+            "Grassland"]
+
 def choose_from(pool):
     sample_list, weight_list = zip(*pool)
     choice = random.choices(sample_list, weight_list, k = 1)
@@ -185,16 +192,62 @@ def string_to_spell(spell_str):
     return spell
 
 class GameState:
-    def __init__(self, seed, difficulty):
-        self.seed = seed
-        self.difficulty = difficulty
+    def __init__(self):
+        self.seed = "default"
+        self.difficulty = 0
+        self.adaptive_difficulty = True
         self.enemy_trait_pool = choose_enemy_trait_pool()
-        self.enemy_health_pool = choose_enemy_health_pool(difficulty)
-        self.enemy_power_pool = choose_enemy_power_pool(difficulty)
+        self.enemy_health_pool = choose_enemy_health_pool(self.difficulty)
+        self.enemy_power_pool = choose_enemy_power_pool(self.difficulty)
         self.player_power_pool = choose_player_power_pool()
         self.player_element_pool = choose_player_element_pool()
+        self.area_biome_pool = choose_area_biome_pool()
         self.player_state = Player(30, 7)
+        self.area_num = 0
+        self.encounter_num = 0
+        self.current_area = Area(0, "none")
+        self.next_area1 = "none"
+        self.next_area2 = "none"
+        self.screen = "intro"
 
+    def set_seed(self, seed):
+        self.seed = seed
 
+    def set_difficulty(self, difficulty):
+        self.difficulty = difficulty
+        self.enemy_health_pool = choose_enemy_health_pool(difficulty)
+        self.enemy_power_pool = choose_enemy_power_pool(difficulty)
 
+    def choose_next_area_fork(self):
+        biomes = self.area_biome_pool.copy()
+        biomes.remove(self.current_area.get_biome())
+        choices = random.choices(biomes, k = 2)
+        self.next_area1 = choices[0]
+        self.next_area2 = choices[1]
+
+    def next_area(self, choice):
+        biome = "none"
+        if choice == 1:
+            biome = self.next_area1
+        if choice == 2:
+            biome = self.next_area2
+        self.current_area = Area(self.area_num, biome)
+        self.encounter_num = 0
+
+    def next_encounter(self):
+        self.screen = "wandering"
+        self.encounter_num += 1
+        enemy = generate_enemy(self.current_area.get_enemy_level_pool(), self.current_area.get_enemy_species_pool(), self.enemy_trait_pool, self.enemy_health_pool, self.enemy_power_pool)
+        self.current_area.next_encounter(self.player_state, enemy)
+        self.screen = "encounter"
+
+    def next_turn(self):
+        self.current_area.current_encounter.do_turn(self.player_state)
+
+        if self.player_state.is_dead():
+            self.screen = "game over"
+        if self.current_area.current_encounter.get_enemy_state().is_dead():
+            self.screen = "encounter win"
+
+        self.current_area.current_encounter.choose_enemy_action()
 

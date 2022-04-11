@@ -1,4 +1,5 @@
 from Species import Species
+from Encounter import Encounter
 def choose_enemy_species_pool(biome):
     if biome == "Desert":
         return [[Species("Meerkat"), 0.6],
@@ -69,11 +70,23 @@ class Area:
         self.num = num
         self.biome = biome
         self.encounter_num = 0
-        self.encounters = []
+        self.current_encounter = None
         self.enemy_species_pool = choose_enemy_species_pool(biome)
         self.enemy_level_pool = choose_enemy_level_pool(num)
 
+    def get_num(self):
+        return self.num
 
+    def get_biome(self):
+        return self.biome
 
+    def get_enemy_species_pool(self):
+        return self.enemy_species_pool
 
+    def get_enemy_level_pool(self):
+        return self.enemy_level_pool
+
+    def next_encounter(self, player, enemy):
+        self.current_encounter = Encounter(player, enemy)
+        self.encounter_num += 1
 

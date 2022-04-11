@@ -28,7 +28,7 @@ class Species:
             self.attack_mod = [0, 1, 1, 2]
             self.defense_mod = [0, 1, 1, 1]
             self.health_mod = [2, 3, 4, 5]
-            self.action_pool = [["attack", 1.0], ["defend", 0.0]]
+            self.action_pool = [["attack", 0.9], ["defend", 0.1]]
             self.special = [0.5, 0.75, 0.5, 0.75]
             self.gold_drop = [5, 6, 7, 8]
 

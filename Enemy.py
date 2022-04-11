@@ -78,11 +78,11 @@ class Enemy:
         self.current_health += amount
 
     def choose_action(self):
-        r, s = random.random(), 0
-        for item in self.get_action_pool():
-            s += item[1]
-            if s >= r:
-                self.set_current_action(item[0])
+        pool = self.get_action_pool()
+        sample_list, weight_list = zip(*pool)
+        choice = random.choices(sample_list, weight_list, k = 1)
+        result = choice[0]
+        self.set_current_action(result)
 
     def is_dead(self):
         return self.current_health <= 0

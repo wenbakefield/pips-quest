@@ -229,11 +229,10 @@ def player_shop_bonus_pool_init(difficulty):
                 [1, 0.01]]
 
 def choose_from(pool):
-    r, s = random.random(), 0
-    for item in pool:
-        s += item[1]
-        if s >= r:
-            return item[0]
+    sample_list, weight_list = zip(*pool)
+    choice = random.choices(sample_list, weight_list, k = 1)
+    result = choice[0]
+    return result
 
 def generate_rune(element_pool, power_pool):
     element = choose_from(element_pool)
@@ -475,7 +474,7 @@ while True:
     # initialize pools
     choose_difficulty(game_difficulty)
 
-    player = Player(player_health, player_health, 0, [], 7, [], 0, "")
+    player = Player(player_health, 0)
 
     # new encounter loop
     while player.get_current_health() > 0 and game_battles_fought < 31:
@@ -612,7 +611,7 @@ while True:
         enemy = generate_enemy(enemy_level_pool, enemy_species_pool, enemy_trait_pool, enemy_health_pool, enemy_power_pool)
         player.set_current_hand(generate_player_hand(player.get_current_hand(), player_element_pool, player_power_pool))
 
-        encounter = Encounter(enemy)
+        encounter = Encounter(player, enemy)
 
         print("\n")
         play_music_loop('music_wilderness.mp3')
@@ -629,7 +628,8 @@ while True:
         game_battle_length = 0
         # battle loop
         while True:
-            enemy = encounter.get_current_enemy_state()
+            player = encounter.get_player_state()
+            enemy = encounter.get_enemy_state()
             print("\n")
             print("The %s's Health: %s" % (enemy.print_name(), enemy.get_current_health()))
             print("Your Health: %s" % (player.get_current_health()))
@@ -659,6 +659,7 @@ while True:
 
             encounter.do_turn(player)
             encounter.display_turn()
+            encounter.choose_enemy_action()
 
             if player.is_dead():
                 print("\n")

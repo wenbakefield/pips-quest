@@ -1,15 +1,16 @@
 from Rune import Rune
 
 class Player:
-    def __init__(self, current_health, max_health, current_gold, current_hand, max_hand, current_spell, current_power, current_action):
-        self.current_health = current_health
+    def __init__(self, max_health, max_hand):
+        self.current_health = max_health
         self.max_health = max_health
-        self.current_gold = current_gold
-        self.current_hand = current_hand
+        self.current_gold = 0
+        self.current_hand = []
         self.max_hand = max_hand
-        self.current_spell = current_spell
-        self.current_power = current_power
-        self.current_action = current_action
+        self.current_spell = []
+        self.current_power = 0
+        self.current_action = ""
+        self.inventory = []
 
     def __repr__(self):
         return "<Player |Current Health:%s |Max Health:%s |Gold:%s |Hand:%s |Max Hand:%s |Spell:%s |Power:%s |Action:%s >" % (self.current_health,

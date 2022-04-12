@@ -117,10 +117,10 @@ def choose_player_element_pool():
             ["A", 0.08]]
 
 def choose_player_power_pool():
-    return [[1, 0.25],
-            [2, 0.25],
-            [3, 0.25],
-            [4, 0.25]]
+    return [[8, 0.5],
+            [9, 0.5],
+            [10, 0.0],
+            [11, 0.0]]
 
 def choose_area_biome_pool():
     return ["Desert",
@@ -262,9 +262,6 @@ class GameState:
         self.current_area.current_encounter.do_turn(self.player_state)
         if self.player_is_dead():
             self.state = "game over"
-        if self.current_enemy_is_dead():
-            if self.encounter_num >= 3:
-                self.choose_next_area_fork()
         self.current_area.current_encounter.choose_enemy_action()
 
     def player_cast_spell(self):
@@ -283,6 +280,9 @@ class GameState:
 
     def player_is_dead(self):
         return self.player_state.is_dead()
+
+    def give_current_enemy_gold_to_player(self):
+        self.player_state.change_current_gold(self.current_area.current_encounter.enemy_state.get_gold())
 
     def get_current_enemy_species(self):
         return self.current_area.current_encounter.enemy_state.species.name

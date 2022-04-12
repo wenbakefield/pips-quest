@@ -76,7 +76,7 @@ font_text = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 4
 # text
 txt_title = font_title.render("Pip's Quest", False, WHITE, None)
 txt_options = font_subtitle.render("Options", False, WHITE, None)
-txt_seed = font_text.render("Seed:                                            ", False, WHITE, GRAY)
+txt_seed = font_text.render("Seed:                                            ", False, WHITE, BLACK)
 txt_fork = font_subtitle.render("Where To?", False, WHITE, None)
 txt_wandering = font_subtitle.render("Wandering...", False, WHITE, None)
 txt_spell = font_text.render("Spell:                                          ", False, WHITE, BLACK)
@@ -180,10 +180,10 @@ class button():
         return False
 
 # buttons
-button_new_game = button(GRAY, (WINDOW_WIDTH // 2) - 125, (WINDOW_HEIGHT // 2) + 450, 250, 90, 'new game')
-button_confirm = button(GRAY, (WINDOW_WIDTH // 2) - 125, (WINDOW_HEIGHT // 2) + 450, 250, 90, 'confirm')
-button_fork_left = button(GRAY, (WINDOW_WIDTH // 2) - 400 - 125, (WINDOW_HEIGHT // 2), 250, 90, 'left')
-button_fork_right = button(GRAY, (WINDOW_WIDTH // 2) + 400 - 125, (WINDOW_HEIGHT // 2), 250, 90, 'right')
+button_new_game = button(BLACK, (WINDOW_WIDTH // 2) - 125, (WINDOW_HEIGHT // 2) + 450, 250, 90, 'new game')
+button_confirm = button(BLACK, (WINDOW_WIDTH // 2) - 125, (WINDOW_HEIGHT // 2) + 450, 250, 90, 'confirm')
+button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - 400 - 125, (WINDOW_HEIGHT // 2), 250, 90, 'left')
+button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + 400 - 125, (WINDOW_HEIGHT // 2), 250, 90, 'right')
 
 # text input
 seed_input = pygame_textinput.TextInputVisualizer()
@@ -259,7 +259,7 @@ def draw_state(state):
                 if button_new_game.isOver(pos):
                     button_new_game.color = LIGHT_GRAY
                 else:
-                    button_new_game.color = GRAY
+                    button_new_game.color = BLACK
 
         screen.blit(bg_title, rect_bg)
         screen.blit(txt_title, rect_title)
@@ -288,7 +288,7 @@ def draw_state(state):
                 if button_confirm.isOver(pos):
                     button_confirm.color = LIGHT_GRAY
                 else:
-                    button_confirm.color = GRAY
+                    button_confirm.color = BLACK
 
         screen.blit(bg_title, rect_bg)
         screen.blit(txt_options, rect_subtitle)
@@ -312,21 +312,21 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
                 if button_fork_left.isOver(pos):
-                    pygame.time.set_timer(pygame.USEREVENT + 1, 4000, 1)
+                    pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(1)
                 if button_fork_right.isOver(pos):
-                    pygame.time.set_timer(pygame.USEREVENT + 1, 4000, 1)
+                    pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(2)
 
             if event.type == MOUSEMOTION :
                 if button_fork_left.isOver(pos):
                     button_fork_left.color = LIGHT_GRAY
                 else:
-                    button_fork_left.color = GRAY
+                    button_fork_left.color = BLACK
                 if button_fork_right.isOver(pos):
                     button_fork_right.color = LIGHT_GRAY
                 else:
-                    button_fork_right.color = GRAY
+                    button_fork_right.color = BLACK
 
         draw_background(game.get_current_area_biome())
         screen.blit(txt_fork, rect_subtitle)
@@ -371,9 +371,15 @@ def draw_state(state):
                 if event.key == pygame.K_RETURN:
                     game.player_cast_spell()
                     spell_input.value = ""
+
                     if game.current_enemy_is_dead():
-                        pygame.time.set_timer(pygame.USEREVENT + 1, 4000, 1)
-                        game.state = "wandering"
+                        game.give_current_enemy_gold_to_player()
+                        if game.encounter_num >= 3:
+                            game.choose_next_area_fork()
+                        else:
+                            pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
+                            game.state = "wandering"
+                        play_music_loop('music_wilderness.mp3')
 
         draw_background(game.get_current_area_biome())
         draw_enemy(game.get_current_enemy_species())
@@ -392,7 +398,7 @@ def draw_state(state):
         screen.blit(txt_player_name, (5, WINDOW_HEIGHT - 150))
         screen.blit(txt_player_stats, (5, WINDOW_HEIGHT - 30))
 
-        screen.blit(txt_player_hand, ((WINDOW_WIDTH // 2) - 200, WINDOW_HEIGHT - 70))
+        screen.blit(txt_player_hand, ((WINDOW_WIDTH // 2) - 235, WINDOW_HEIGHT - 65))
         screen.blit(txt_spell, rect_spell)
         screen.blit(spell_input.surface, rect_spell.move(120, 0))
 

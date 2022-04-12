@@ -3,6 +3,9 @@ import requests
 import statistics
 import time
 import pygame
+import sys
+
+from pygame.locals import *
 
 from Species import Species
 from Trait import Trait
@@ -191,9 +194,16 @@ def string_to_spell(spell_str):
         spell.append(rune)
     return spell
 
+def choose_seed():
+    word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
+    response = requests.get(word_site)
+    words = response.content.splitlines()
+    game_seed = str((random.choice(words)).decode('UTF-8'))
+    return game_seed
+
 class GameState:
     def __init__(self):
-        self.seed = "default"
+        self.seed = choose_seed()
         self.difficulty = 0
         self.adaptive_difficulty = True
         self.enemy_trait_pool = choose_enemy_trait_pool()
@@ -203,12 +213,15 @@ class GameState:
         self.player_element_pool = choose_player_element_pool()
         self.area_biome_pool = choose_area_biome_pool()
         self.player_state = Player(30, 7)
+        self.spell_str = ""
         self.area_num = 0
         self.encounter_num = 0
         self.current_area = Area(0, "none")
         self.next_area1 = "none"
         self.next_area2 = "none"
-        self.screen = "intro"
+        self.state = "title"
+
+    # game logic
 
     def set_seed(self, seed):
         self.seed = seed
@@ -220,10 +233,12 @@ class GameState:
 
     def choose_next_area_fork(self):
         biomes = self.area_biome_pool.copy()
-        biomes.remove(self.current_area.get_biome())
-        choices = random.choices(biomes, k = 2)
+        if self.current_area.get_biome() in biomes:
+            biomes.remove(self.current_area.get_biome())
+        choices = random.sample(biomes, 2)
         self.next_area1 = choices[0]
         self.next_area2 = choices[1]
+        self.state = "fork"
 
     def next_area(self, choice):
         biome = "none"
@@ -231,23 +246,58 @@ class GameState:
             biome = self.next_area1
         if choice == 2:
             biome = self.next_area2
+        self.area_num += 1
         self.current_area = Area(self.area_num, biome)
         self.encounter_num = 0
+        self.state = "wandering"
 
     def next_encounter(self):
-        self.screen = "wandering"
         self.encounter_num += 1
+        self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
         enemy = generate_enemy(self.current_area.get_enemy_level_pool(), self.current_area.get_enemy_species_pool(), self.enemy_trait_pool, self.enemy_health_pool, self.enemy_power_pool)
         self.current_area.next_encounter(self.player_state, enemy)
-        self.screen = "encounter"
+        self.state = "encounter"
 
     def next_turn(self):
         self.current_area.current_encounter.do_turn(self.player_state)
-
-        if self.player_state.is_dead():
-            self.screen = "game over"
-        if self.current_area.current_encounter.get_enemy_state().is_dead():
-            self.screen = "encounter win"
-
+        if self.player_is_dead():
+            self.state = "game over"
+        if self.current_enemy_is_dead():
+            if self.encounter_num >= 3:
+                self.choose_next_area_fork()
         self.current_area.current_encounter.choose_enemy_action()
 
+    def player_cast_spell(self):
+        self.player_state.set_current_spell(string_to_spell(self.spell_str))
+
+        if self.player_state.has_valid_current_spell():
+            self.player_state.cast_spell()
+            self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
+            self.next_turn()
+        else:
+            self.player_state.set_current_spell([])
+            self.spell_str = ""
+
+    def current_enemy_is_dead(self):
+        return self.current_area.current_encounter.get_enemy_state().is_dead()
+
+    def player_is_dead(self):
+        return self.player_state.is_dead()
+
+    def get_current_enemy_species(self):
+        return self.current_area.current_encounter.enemy_state.species.name
+
+    def get_current_area_biome(self):
+        return self.current_area.get_biome()
+
+    def get_current_enemy_name(self):
+        return self.current_area.current_encounter.enemy_state.print_name()
+
+    def get_current_enemy_stats(self):
+        return self.current_area.current_encounter.enemy_state.print_stats()
+
+    def get_current_player_stats(self):
+        return self.player_state.print_stats()
+
+    def get_current_player_hand(self):
+        return "Hand: " + str(' '.join([str(rune) for rune in self.player_state.get_current_hand()]))

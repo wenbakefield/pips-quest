@@ -92,17 +92,6 @@ class Player:
     def change_current_gold(self, amount):
         self.current_gold += amount
 
-    """
-    def draw_hand(self, player_element_pool, player_power_pool):
-        num_runes_needed = self.max_hand - len(self.current_hand)
-        count = 0
-        while count < num_runes_needed:
-            new_rune = make_rune(player_element_pool, player_power_pool)
-            self.current_hand.append(new_rune)
-            count += 1
-
-    """
-
     def remove_spell_from_hand(self):
         for rune in self.current_spell:
             if (rune in self.current_hand):
@@ -159,3 +148,6 @@ class Player:
 
     def is_dead(self):
         return self.current_health <= 0
+
+    def print_stats(self):
+        return "Health: " + str(self.current_health) + " | " + "Gold: " + str(self.current_gold)

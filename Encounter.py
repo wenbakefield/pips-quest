@@ -96,6 +96,8 @@ class Encounter:
         self.update_enemy_state(enemy)
 
     def display_turn(self):
+        result = []
+
         player = self.get_player_state()
         enemy = self.get_enemy_state()
         player_action = player.get_current_action()
@@ -105,32 +107,38 @@ class Encounter:
         enemy_name = enemy.print_name()
 
         if enemy_action == "attack" and player_action == "attack":
-            print("The %s attacks for %s!" % (enemy_name, enemy_power))
-            print("You attack for %s!" % (player_power))
+            result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
+            result.append("You attack for %s!" % (player_power))
 
         elif enemy_action == "defend" and player_action == "attack":
-            print("The %s defends for %s!" % (enemy_name, enemy_power))
-            print("You attack for %s!" % (player_power))
+            result.append("The %s defends for %s!" % (enemy_name, enemy_power))
+            result.append("You attack for %s!" % (player_power))
 
             if player_power > enemy_power:
-                print("You do %s damage!" % (self.get_player_damage_dealt()))
+                result.append("You do %s damage!" % (self.get_player_damage_dealt()))
 
             else:
-                print("The %s blocks your attack!" % (enemy_name))
+                result.append("The %s blocks your attack!" % (enemy_name))
 
         elif enemy_action == "attack" and player_action == "defend":
-            print("You defend for %s!" % (player_power))
-            print("The %s attacks for %s!" % (enemy_name, enemy_power))
+            result.append("You defend for %s!" % (player_power))
+            result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
 
             if enemy_power > player_power:
-                print("You take %s damage!" % (self.get_player_damage_taken()))
+                result.append("You take %s damage!" % (self.get_player_damage_taken()))
 
             else:
-                print("You block the attack!")
+                result.append("You block the attack!")
+
+        elif enemy_action == "defend" and player_action == "defend":
+            result.append("You both defend!")
+            result.append("Nothing happens...")
 
         else:
-            print("You both defend!")
-            print("Nothing happens...")
+            result.append("Waiting...")
+
+        return result
+
 
     def choose_enemy_action(self):
         self.get_enemy_state().choose_action()

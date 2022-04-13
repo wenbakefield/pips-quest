@@ -360,8 +360,6 @@ game = GameState()
 seed_input.value = game.seed
 seed_input.manager.cursor_pos = len(seed_input.value)
 
-
-
 # The main function that controls the game
 def main () :
   running = True
@@ -397,6 +395,14 @@ def draw_enemy(enemy_name):
         moving_sprites.add(Rat(0, 140))
     if enemy_name == "Spider":
         moving_sprites.add(Spider(0, 140))
+
+def draw_turn_result(turn_result):
+    if turn_result:
+        space = 0
+        for line in turn_result:
+            txt_result = font_text.render(str(line), False, WHITE, BLACK)
+            screen.blit(txt_result, (5, 160 + space))
+            space += 30
 
 def draw_state(state):
     if state == "title":
@@ -535,6 +541,7 @@ def draw_state(state):
                 if event.key == pygame.K_RETURN:
                     play_sound(sound_player_spell)
                     game.player_cast_spell()
+                    turn_result = game.update_turn_result_text()
                     spell_input.value = ""
 
                     if game.current_enemy_is_dead():
@@ -558,9 +565,7 @@ def draw_state(state):
         txt_player_stats = font_text.render(game.get_current_player_stats(), False, WHITE, BLACK)
 
         txt_player_hand = font_text.render(game.get_current_player_hand(), False, WHITE, BLACK)
-
         
-
         screen.blit(txt_enemy_name, (5, 10))
         screen.blit(txt_enemy_stats, (5, 130))
         screen.blit(txt_player_name, (5, WINDOW_HEIGHT - 150))
@@ -569,6 +574,8 @@ def draw_state(state):
         screen.blit(txt_player_hand, ((WINDOW_WIDTH // 2) - 235, WINDOW_HEIGHT - 65))
         screen.blit(txt_spell, rect_spell)
         screen.blit(spell_input.surface, rect_spell.move(120, 0))
+
+        draw_turn_result(game.turn_result)
 
         pygame.display.flip()
 

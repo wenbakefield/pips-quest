@@ -117,10 +117,10 @@ def choose_player_element_pool():
             ["A", 0.08]]
 
 def choose_player_power_pool():
-    return [[8, 0.5],
-            [9, 0.5],
-            [10, 0.0],
-            [11, 0.0]]
+    return [[1, 0.25],
+            [2, 0.25],
+            [3, 0.25],
+            [4, 0.25]]
 
 def choose_area_biome_pool():
     return ["Desert",
@@ -220,6 +220,7 @@ class GameState:
         self.next_area1 = "none"
         self.next_area2 = "none"
         self.state = "title"
+        self.turn_result = []
 
     # game logic
 
@@ -301,3 +302,6 @@ class GameState:
 
     def get_current_player_hand(self):
         return "Hand: " + str(' '.join([str(rune) for rune in self.player_state.get_current_hand()]))
+
+    def update_turn_result_text(self):
+        self.turn_result = self.current_area.current_encounter.display_turn()

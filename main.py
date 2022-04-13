@@ -82,45 +82,204 @@ txt_wandering = font_subtitle.render("Wandering...", False, WHITE, None)
 txt_spell = font_text.render("Spell:                                          ", False, WHITE, BLACK)
 
 # backgrounds
-bg_title = pygame.image.load(os.path.join('images', 'bg_title.png'))
+bg_title = pygame.image.load(os.path.join('images', 'bg_title.png')).convert()
 bg_title = pygame.transform.scale(bg_title, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-bg_forest = pygame.image.load(os.path.join('images', 'bg_forest.png'))
+bg_forest = pygame.image.load(os.path.join('images', 'bg_forest.png')).convert()
 bg_forest = pygame.transform.scale(bg_forest, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-bg_desert = pygame.image.load(os.path.join('images', 'bg_desert.png'))
+bg_desert = pygame.image.load(os.path.join('images', 'bg_desert.png')).convert()
 bg_desert = pygame.transform.scale(bg_desert, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-bg_cave = pygame.image.load(os.path.join('images', 'bg_cave.png'))
+bg_cave = pygame.image.load(os.path.join('images', 'bg_cave.png')).convert()
 bg_cave = pygame.transform.scale(bg_cave, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-bg_grassland = pygame.image.load(os.path.join('images', 'bg_grassland.png'))
+bg_grassland = pygame.image.load(os.path.join('images', 'bg_grassland.png')).convert()
 bg_grassland = pygame.transform.scale(bg_grassland, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
-bg_swamp = pygame.image.load(os.path.join('images', 'bg_swamp.png'))
+bg_swamp = pygame.image.load(os.path.join('images', 'bg_swamp.png')).convert()
 bg_swamp = pygame.transform.scale(bg_swamp, (WINDOW_WIDTH, WINDOW_HEIGHT))
 
 # mobs
-mob_bat = pygame.image.load(os.path.join('images', 'mob_bat.png'))
+mob_bat = pygame.image.load(os.path.join('images', 'mob_bat', 'mob_bat.png')).convert_alpha()
 mob_bat = pygame.transform.scale(mob_bat, (65 * SCALE, 65 * SCALE))
 
-mob_frog = pygame.image.load(os.path.join('images', 'mob_frog.png'))
-mob_frog = pygame.transform.scale(mob_frog, (65 * SCALE, 65 * SCALE))
+mob_bullfrog = pygame.image.load(os.path.join('images', 'mob_bullfrog', 'mob_bullfrog.png')).convert_alpha()
+mob_bullfrog = pygame.transform.scale(mob_bullfrog, (65 * SCALE, 65 * SCALE))
 
-mob_meerkat = pygame.image.load(os.path.join('images', 'mob_rabbit.png'))
+mob_meerkat = pygame.image.load(os.path.join('images', 'mob_meerkat', 'mob_meerkat.png')).convert_alpha()
 mob_meerkat = pygame.transform.scale(mob_meerkat, (65 * SCALE, 65 * SCALE))
 
-mob_rat = pygame.image.load(os.path.join('images', 'mob_rat.png'))
+mob_rat = pygame.image.load(os.path.join('images', 'mob_rat', 'mob_rat.png')).convert_alpha()
 mob_rat = pygame.transform.scale(mob_rat, (65 * SCALE, 65 * SCALE))
 
-mob_spider = pygame.image.load(os.path.join('images', 'mob_spider.png'))
+mob_spider = pygame.image.load(os.path.join('images', 'mob_spider', 'mob_spider.png')).convert_alpha()
 mob_spider = pygame.transform.scale(mob_spider, (65 * SCALE, 65 * SCALE))
 
-mob_snake = pygame.image.load(os.path.join('images', 'mob_snake.png'))
+mob_snake = pygame.image.load(os.path.join('images', 'mob_snake', 'mob_snake.png')).convert_alpha()
 mob_snake = pygame.transform.scale(mob_snake, (160 * SCALE, 120 * SCALE))
 
-mob_rabbit = pygame.image.load(os.path.join('images', 'mob_rabbit.png'))
-mob_rabbit = pygame.transform.scale(mob_rabbit, (65 * SCALE, 65 * SCALE))
+# sprites
+
+class Bat(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'mob_bat', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+class Bullfrog(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'mob_bullfrog', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+class Meerkat(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'mob_meerkat', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+class Rat(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'mob_rat', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+class Snake(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'mob_snake', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+class Spider(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'mob_spider', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+# sprite groups
+
+moving_sprites = pygame.sprite.Group()
 
 # rects
 rect_bg = bg_title.get_rect()
@@ -229,15 +388,15 @@ def draw_background(biome):
 
 def draw_enemy(enemy_name):
     if enemy_name == "Bat":
-        screen.blit(mob_bat, rect_mob)
+        moving_sprites.add(Bat(0, 0))
     if enemy_name == "Bullfrog":
-        screen.blit(mob_frog, rect_mob)
+        moving_sprites.add(Bullfrog(0, 140))
     if enemy_name == "Meerkat":
-        screen.blit(mob_meerkat, rect_mob)
+        moving_sprites.add(Meerkat(0, 140))
     if enemy_name == "Rat":
-        screen.blit(mob_rat, rect_mob)
+        moving_sprites.add(Rat(0, 140))
     if enemy_name == "Spider":
-        screen.blit(mob_spider, rect_mob)
+        moving_sprites.add(Spider(0, 140))
 
 def draw_state(state):
     if state == "title":
@@ -252,6 +411,7 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
                 if button_new_game.isOver(pos):
+                    play_sound(sound_player_select)
                     play_music_loop('music_options.mp3')
                     game.state = "options"
 
@@ -280,6 +440,7 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
                 if button_confirm.isOver(pos):
+                    play_sound(sound_player_select)
                     game.seed = seed_input.value
                     game.choose_next_area_fork()
                     play_music_loop('music_wilderness.mp3')
@@ -312,9 +473,11 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
                 if button_fork_left.isOver(pos):
+                    play_sound(sound_player_select)
                     pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(1)
                 if button_fork_right.isOver(pos):
+                    play_sound(sound_player_select)
                     pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(2)
 
@@ -346,6 +509,7 @@ def draw_state(state):
 
             if event.type == USEREVENT + 2:
                 game.next_encounter()
+                draw_enemy(game.get_current_enemy_species())
                 play_enemy_music(game.get_current_enemy_species())
 
             if event.type == USEREVENT + 1:
@@ -369,10 +533,12 @@ def draw_state(state):
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
+                    play_sound(sound_player_spell)
                     game.player_cast_spell()
                     spell_input.value = ""
 
                     if game.current_enemy_is_dead():
+                        moving_sprites.empty()
                         game.give_current_enemy_gold_to_player()
                         if game.encounter_num >= 3:
                             game.choose_next_area_fork()
@@ -382,7 +548,9 @@ def draw_state(state):
                         play_music_loop('music_wilderness.mp3')
 
         draw_background(game.get_current_area_biome())
-        draw_enemy(game.get_current_enemy_species())
+        
+        moving_sprites.draw(screen)
+        moving_sprites.update(0.1)
 
         txt_enemy_name = font_subtitle.render(game.get_current_enemy_name(), False, WHITE, BLACK)
         txt_enemy_stats = font_text.render(game.get_current_enemy_stats(), False, WHITE, BLACK)

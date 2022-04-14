@@ -14,7 +14,7 @@ LIGHT_GRAY = (150, 150, 150)
 # Game Setup
 FPS = 60
 clock = pygame.time.Clock()
-SCALE = 5
+SCALE = 3
 WINDOW_WIDTH = 320 * SCALE
 WINDOW_HEIGHT = 240 * SCALE
  
@@ -70,8 +70,8 @@ def play_sound(sound):
 # fonts
 font_title = pygame.font.Font(os.path.join('fonts', 'AncientModernTales-a7Po.ttf'), 50 * SCALE)
 font_subtitle = pygame.font.Font(os.path.join('fonts', 'AncientModernTales-a7Po.ttf'), 20 * SCALE)
-font_button = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 4 * SCALE)
-font_text = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 4 * SCALE)
+font_button = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 5 * SCALE)
+font_text = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 5 * SCALE)
 
 # text
 txt_title = font_title.render("Pip's Quest", False, WHITE, None)
@@ -80,6 +80,8 @@ txt_seed = font_text.render("Seed:                                            ",
 txt_fork = font_subtitle.render("Where To?", False, WHITE, None)
 txt_wandering = font_subtitle.render("Wandering...", False, WHITE, None)
 txt_spell = font_text.render("Spell:                                          ", False, WHITE, BLACK)
+txt_game_over = font_title.render("Game Over!", False, WHITE, None)
+txt_game_win = font_title.render("You Win!", False, WHITE, None)
 
 # backgrounds
 bg_title = pygame.image.load(os.path.join('images', 'bg_title.png')).convert()
@@ -287,27 +289,27 @@ rect_bg = rect_bg.move((0, 0))
 
 rect_title = txt_title.get_rect()
 rect_title.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_title = rect_title.move((0, -400))
+rect_title = rect_title.move((0, -400 / 5 * SCALE))
 
 rect_seed = txt_seed.get_rect()
 rect_seed.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_seed = rect_seed.move((0, -300))
+rect_seed = rect_seed.move((0, -300 / 5 * SCALE))
 
 rect_spell = txt_spell.get_rect()
 rect_spell.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_spell = rect_spell.move((0, 575))
+rect_spell = rect_spell.move((0, 575 / 5 * SCALE))
 
 rect_subtitle = txt_fork.get_rect()
 rect_subtitle.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_subtitle = rect_subtitle.move((0, -500))
+rect_subtitle = rect_subtitle.move((0, -500 / 5 * SCALE))
 
 rect_mob = mob_bat.get_rect()
 rect_mob.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_mob = rect_mob.move((0, 150))
+rect_mob = rect_mob.move((0, 150 / 5 * SCALE))
 
 rect_boss = mob_snake.get_rect()
 rect_boss.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_boss = rect_boss.move((0, 150))
+rect_boss = rect_boss.move((0, 150 / 5 * SCALE))
 
 class button():
     def __init__(self, color, x, y, width, height, text=''):
@@ -339,10 +341,10 @@ class button():
         return False
 
 # buttons
-button_new_game = button(BLACK, (WINDOW_WIDTH // 2) - 125, (WINDOW_HEIGHT // 2) + 450, 250, 90, 'new game')
-button_confirm = button(BLACK, (WINDOW_WIDTH // 2) - 125, (WINDOW_HEIGHT // 2) + 450, 250, 90, 'confirm')
-button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - 400 - 125, (WINDOW_HEIGHT // 2), 250, 90, 'left')
-button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + 400 - 125, (WINDOW_HEIGHT // 2), 250, 90, 'right')
+button_new_game = button(BLACK, (WINDOW_WIDTH // 2) - (125 / 5 * SCALE), (WINDOW_HEIGHT // 2) + (450 / 5 * SCALE), 250 / 5 * SCALE, 90 / 5 * SCALE, 'new game')
+button_confirm = button(BLACK, (WINDOW_WIDTH // 2) - (125 / 5 * SCALE), (WINDOW_HEIGHT // 2) + (450 / 5 * SCALE), 250 / 5 * SCALE, 90 / 5 * SCALE, 'confirm')
+button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - (525 / 5 * SCALE), (WINDOW_HEIGHT // 2), (250  / 5 * SCALE), (90 / 5 * SCALE), 'left')
+button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + (275 / 5 * SCALE), (WINDOW_HEIGHT // 2), (250 / 5 * SCALE), (90 / 5 * SCALE), 'right')
 
 # text input
 seed_input = pygame_textinput.TextInputVisualizer()
@@ -356,19 +358,18 @@ spell_input.font_object = font_text
 spell_input.cursor_color = WHITE
 
 game = GameState()
-
 seed_input.value = game.seed
 seed_input.manager.cursor_pos = len(seed_input.value)
+turn_results = []
 
 # The main function that controls the game
 def main () :
-  running = True
-  play_music('music_title.mp3')
-  while running :
-
-    draw_state(game.state)
-    pygame.display.update()
-    clock.tick(FPS)
+    running = True
+    play_music('music_title.mp3')
+    while running :
+        draw_state(game.state)
+        pygame.display.update()
+        clock.tick(FPS)
 
 def draw_background(biome):
     if biome == "Cave":
@@ -388,23 +389,25 @@ def draw_enemy(enemy_name):
     if enemy_name == "Bat":
         moving_sprites.add(Bat(0, 0))
     if enemy_name == "Bullfrog":
-        moving_sprites.add(Bullfrog(0, 140))
+        moving_sprites.add(Bullfrog(0, 140 / 5 * SCALE))
     if enemy_name == "Meerkat":
-        moving_sprites.add(Meerkat(0, 140))
+        moving_sprites.add(Meerkat(0, 140 / 5 * SCALE))
     if enemy_name == "Rat":
-        moving_sprites.add(Rat(0, 140))
+        moving_sprites.add(Rat(0, 140 / 5 * SCALE))
     if enemy_name == "Spider":
-        moving_sprites.add(Spider(0, 140))
+        moving_sprites.add(Spider(0, 140 / 5 * SCALE))
 
 def draw_turn_result(turn_result):
     if turn_result:
         space = 0
         for line in turn_result:
             txt_result = font_text.render(str(line), False, WHITE, BLACK)
-            screen.blit(txt_result, (5, 160 + space))
-            space += 30
+            screen.blit(txt_result, (5 / 5 * SCALE, (160 + space) / 5 * SCALE))
+            space += txt_result.get_rect().height * 2
 
 def draw_state(state):
+    global game
+    global turn_result
     if state == "title":
         events = pygame.event.get()
 
@@ -417,7 +420,7 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
                 if button_new_game.isOver(pos):
-                    play_sound(sound_player_select)
+                    play_sound(sound_player_attack)
                     play_music_loop('music_options.mp3')
                     game.state = "options"
 
@@ -446,9 +449,13 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
                 if button_confirm.isOver(pos):
+
+                    moving_sprites.empty() # fix this
+
                     play_sound(sound_player_select)
                     game.seed = seed_input.value
                     game.choose_next_area_fork()
+                    game.state = "fork"
                     play_music_loop('music_wilderness.mp3')
 
             if event.type == MOUSEMOTION :
@@ -460,7 +467,7 @@ def draw_state(state):
         screen.blit(bg_title, rect_bg)
         screen.blit(txt_options, rect_subtitle)
         screen.blit(txt_seed, rect_seed)
-        screen.blit(seed_input.surface, rect_seed.move(120, 0))
+        screen.blit(seed_input.surface, rect_seed.move(150 / 5 * SCALE, 0))
         button_confirm.draw(screen)
         pygame.display.flip()
 
@@ -482,10 +489,22 @@ def draw_state(state):
                     play_sound(sound_player_select)
                     pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(1)
+                    if game.area_num >= 6:
+                        play_music('music_game_win.mp3')
+                        game.state = "game_win"
+                    else:
+                        play_music_loop('music_wilderness.mp3')
+                        game.state = "wandering"
                 if button_fork_right.isOver(pos):
                     play_sound(sound_player_select)
                     pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(2)
+                    if game.area_num >= 6:
+                        play_music('music_game_win.mp3')
+                        game.state = "game_win"
+                    else:
+                        play_music_loop('music_wilderness.mp3')
+                        game.state = "wandering"
 
             if event.type == MOUSEMOTION :
                 if button_fork_left.isOver(pos):
@@ -517,6 +536,7 @@ def draw_state(state):
                 game.next_encounter()
                 draw_enemy(game.get_current_enemy_species())
                 play_enemy_music(game.get_current_enemy_species())
+                game.state = "encounter"
 
             if event.type == USEREVENT + 1:
                 play_music('music_encounter.mp3')
@@ -541,14 +561,18 @@ def draw_state(state):
                 if event.key == pygame.K_RETURN:
                     play_sound(sound_player_spell)
                     game.player_cast_spell()
-                    turn_result = game.update_turn_result_text()
                     spell_input.value = ""
+
+                    if game.player_is_dead():
+                        game.state = "game_over"
+                        play_music('music_game_over.mp3')
 
                     if game.current_enemy_is_dead():
                         moving_sprites.empty()
                         game.give_current_enemy_gold_to_player()
                         if game.encounter_num >= 3:
                             game.choose_next_area_fork()
+                            game.state = "fork"
                         else:
                             pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                             game.state = "wandering"
@@ -566,19 +590,80 @@ def draw_state(state):
 
         txt_player_hand = font_text.render(game.get_current_player_hand(), False, WHITE, BLACK)
         
-        screen.blit(txt_enemy_name, (5, 10))
-        screen.blit(txt_enemy_stats, (5, 130))
-        screen.blit(txt_player_name, (5, WINDOW_HEIGHT - 150))
-        screen.blit(txt_player_stats, (5, WINDOW_HEIGHT - 30))
+        screen.blit(txt_enemy_name, (5 / 5 * SCALE, 10 / 5 * SCALE))
+        screen.blit(txt_enemy_stats, (5 / 5 * SCALE, 130 / 5 * SCALE))
+        screen.blit(txt_player_name, (5 / 5 * SCALE, WINDOW_HEIGHT - (150 / 5 * SCALE)))
+        screen.blit(txt_player_stats, (5 / 5 * SCALE, WINDOW_HEIGHT - (30 / 5 * SCALE)))
 
-        screen.blit(txt_player_hand, ((WINDOW_WIDTH // 2) - 235, WINDOW_HEIGHT - 65))
+        screen.blit(txt_player_hand, ((WINDOW_WIDTH // 2) - (280 / 5 * SCALE), WINDOW_HEIGHT - (65 / 5 * SCALE)))
         screen.blit(txt_spell, rect_spell)
-        screen.blit(spell_input.surface, rect_spell.move(120, 0))
+        screen.blit(spell_input.surface, rect_spell.move(120 / 5 * SCALE, 0))
 
         draw_turn_result(game.turn_result)
 
         pygame.display.flip()
 
+    if state == "game_over":
+            events = pygame.event.get()
+
+            for event in events :
+                pos = pygame.mouse.get_pos()
+
+                if event.type == QUIT :
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == MOUSEBUTTONDOWN :
+                    if button_new_game.isOver(pos):
+                        play_sound(sound_player_select)
+                        play_music_loop('music_options.mp3')
+                        game = GameState()
+                        game.state = "options"
+
+                if event.type == MOUSEMOTION :
+                    if button_new_game.isOver(pos):
+                        button_new_game.color = LIGHT_GRAY
+                    else:
+                        button_new_game.color = BLACK
+
+            screen.blit(bg_title, rect_bg)
+            screen.blit(txt_game_over, rect_title)
+            txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
+            rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+            screen.blit(txt_score, rect_score)
+            button_new_game.draw(screen)
+            pygame.display.flip()
+
+    if state == "game_win":
+            events = pygame.event.get()
+
+            for event in events :
+                pos = pygame.mouse.get_pos()
+
+                if event.type == QUIT :
+                    pygame.quit()
+                    sys.exit()
+
+                if event.type == MOUSEBUTTONDOWN :
+                    if button_new_game.isOver(pos):
+                        play_sound(sound_player_select)
+                        play_music_loop('music_options.mp3')
+                        game = GameState()
+                        game.state = "options"
+
+                if event.type == MOUSEMOTION :
+                    if button_new_game.isOver(pos):
+                        button_new_game.color = LIGHT_GRAY
+                    else:
+                        button_new_game.color = BLACK
+
+            screen.blit(bg_title, rect_bg)
+            screen.blit(txt_game_win, rect_title)
+            txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
+            rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+            screen.blit(txt_score, rect_score)
+            button_new_game.draw(screen)
+            pygame.display.flip()
 
 if __name__=="__main__":
     main()

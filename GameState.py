@@ -239,7 +239,7 @@ class GameState:
         choices = random.sample(biomes, 2)
         self.next_area1 = choices[0]
         self.next_area2 = choices[1]
-        self.state = "fork"
+        
 
     def next_area(self, choice):
         biome = "none"
@@ -248,22 +248,21 @@ class GameState:
         if choice == 2:
             biome = self.next_area2
         self.area_num += 1
-        self.current_area = Area(self.area_num, biome)
-        self.encounter_num = 0
-        self.state = "wandering"
+        if not self.area_num >= 6:
+            self.current_area = Area(self.area_num, biome)
+            self.encounter_num = 0
 
     def next_encounter(self):
         self.encounter_num += 1
         self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
         enemy = generate_enemy(self.current_area.get_enemy_level_pool(), self.current_area.get_enemy_species_pool(), self.enemy_trait_pool, self.enemy_health_pool, self.enemy_power_pool)
         self.current_area.next_encounter(self.player_state, enemy)
-        self.state = "encounter"
 
     def next_turn(self):
         self.current_area.current_encounter.do_turn(self.player_state)
-        if self.player_is_dead():
-            self.state = "game over"
-        self.current_area.current_encounter.choose_enemy_action()
+        if not self.player_is_dead():
+            self.turn_result = self.current_area.current_encounter.display_turn()
+            self.current_area.current_encounter.choose_enemy_action()
 
     def player_cast_spell(self):
         self.player_state.set_current_spell(string_to_spell(self.spell_str))
@@ -303,5 +302,5 @@ class GameState:
     def get_current_player_hand(self):
         return "Hand: " + str(' '.join([str(rune) for rune in self.player_state.get_current_hand()]))
 
-    def update_turn_result_text(self):
-        self.turn_result = self.current_area.current_encounter.display_turn()
+    def get_turn_result(self):
+        return self.turn_result

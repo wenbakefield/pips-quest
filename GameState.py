@@ -170,7 +170,7 @@ def generate_enemy(level_pool, species_pool, trait_pool, health_pool, power_pool
     return enemy
 
 def generate_player_hand(current_player_hand, player_element_pool, player_power_pool):
-    num_runes_needed = 7 - len(current_player_hand)
+    num_runes_needed = 5 - len(current_player_hand)
     new_player_hand = current_player_hand.copy()
     count = 0
     while count < num_runes_needed:
@@ -202,17 +202,33 @@ def choose_seed():
     return game_seed
 
 class GameState:
-    def __init__(self):
-        self.seed = choose_seed()
-        self.difficulty = 0
-        self.adaptive_difficulty = True
+    def __init__(self, seed, difficulty, difficulty_type):
+        if seed == "":
+            self.seed = choose_seed()
+        else:
+            self.seed = str(seed)
+
+        if difficulty == "easy":
+            self.difficulty = -1
+        elif difficulty == "hard":
+            self.difficulty = 1
+        else:
+            self.difficulty = 0
+
+        if difficulty_type == "constant":
+            self.adaptive_difficulty = False
+        elif difficulty_type == "adaptive":
+            self.adaptive_difficulty = True
+        else:
+            self.adaptive_difficulty = True
+
         self.enemy_trait_pool = choose_enemy_trait_pool()
         self.enemy_health_pool = choose_enemy_health_pool(self.difficulty)
         self.enemy_power_pool = choose_enemy_power_pool(self.difficulty)
         self.player_power_pool = choose_player_power_pool()
         self.player_element_pool = choose_player_element_pool()
         self.area_biome_pool = choose_area_biome_pool()
-        self.player_state = Player(30, 7)
+        self.player_state = Player(30, 5)
         self.spell_str = ""
         self.area_num = 0
         self.encounter_num = 0
@@ -239,7 +255,6 @@ class GameState:
         choices = random.sample(biomes, 2)
         self.next_area1 = choices[0]
         self.next_area2 = choices[1]
-        
 
     def next_area(self, choice):
         biome = "none"
@@ -265,15 +280,9 @@ class GameState:
             self.current_area.current_encounter.choose_enemy_action()
 
     def player_cast_spell(self):
-        self.player_state.set_current_spell(string_to_spell(self.spell_str))
-
-        if self.player_state.has_valid_current_spell():
-            self.player_state.cast_spell()
-            self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
-            self.next_turn()
-        else:
-            self.player_state.set_current_spell([])
-            self.spell_str = ""
+        self.player_state.cast_spell()
+        self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
+        self.next_turn()
 
     def current_enemy_is_dead(self):
         return self.current_area.current_encounter.get_enemy_state().is_dead()

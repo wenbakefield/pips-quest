@@ -92,24 +92,24 @@ class Player:
     def change_current_gold(self, amount):
         self.current_gold += amount
 
-    def remove_spell_from_hand(self):
-        for rune in self.current_spell:
-            if (rune in self.current_hand):
-                self.current_hand.remove(rune)
+#    def remove_spell_from_hand(self):
+#        for rune in self.current_spell:
+#            if (rune in self.current_hand):
+#                self.current_hand.remove(rune)
 
     def has_valid_current_spell(self):
         if not self.current_spell:
             return False
         if self.current_spell[0].get_element() == "A":
-            print("The first rune in your spell cannot be arcane!")
+#            print("The first rune in your spell cannot be arcane!")
             return False
-        hand_temp = self.current_hand.copy()
-        for rune in self.current_spell:
-            if (rune in hand_temp):
-                hand_temp.remove(rune)
-            else:
-                print("You can only use the runes in your rune bag!")
-                return False
+#        hand_temp = self.current_hand.copy()
+#        for rune in self.current_spell:
+#            if (rune in hand_temp):
+#                hand_temp.remove(rune)
+#            else:
+#                print("You can only use the runes in your rune bag!")
+#                return False
 
         if self.current_spell[-1].get_element() == "A":
             wildcard_power = self.current_spell[-2].get_power() + 1
@@ -127,14 +127,14 @@ class Player:
                 elif power_difference == 2:
                     self.current_spell[i].set_power(previous_rune_power - 1)
                 else:
-                    print("You cannot place an arcane rune there!")
+#                    print("You cannot place an arcane rune there!")
                     return False
 
         for i in range(1, len(self.current_spell)):
             previous_rune = self.current_spell[i - 1]
             current_rune = self.current_spell[i]
             if abs(previous_rune.get_power() - current_rune.get_power()) != 1:
-                print("You can only place runes next to each other if they differ in power level by 1!")
+#                print("You can only place runes next to each other if they differ in power level by 1!")
                 return False
         return True
 
@@ -142,8 +142,8 @@ class Player:
         if self.has_valid_current_spell():
             self.set_current_action()
             self.set_current_power()
-            self.remove_spell_from_hand()
         else:
+            self.current_hand = self.current_hand + self.current_spell
             self.set_current_spell([])
 
     def is_dead(self):

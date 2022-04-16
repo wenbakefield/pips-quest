@@ -133,9 +133,10 @@ class Encounter:
         elif enemy_action == "defend" and player_action == "defend":
             result.append("You both defend!")
             result.append("Nothing happens...")
+            result.append("How exciting...")
 
         else:
-            result.append("Waiting...")
+            result = []
 
         return result
 

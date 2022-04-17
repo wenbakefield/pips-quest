@@ -49,7 +49,7 @@ class Encounter:
 
         player_action = player.get_current_action()
         enemy_action = enemy.get_current_action()
-        player_power = player.get_current_power()
+        player_power = 99 #player.get_current_power()
         enemy_power = enemy.get_current_power()
         power_difference = abs(player_power - enemy_power)
 
@@ -77,7 +77,6 @@ class Encounter:
 
         elif enemy_action == "attack" and player_action == "defend":
             enemy_power += enemy.get_base_attack()
-            enemy_power += 1
             power_difference = abs(player_power - enemy_power)
             if enemy_power > player_power:
                 player.change_current_health(-power_difference)
@@ -129,7 +128,6 @@ class Encounter:
 
         elif enemy_action == "attack" and player_action == "defend":
             enemy_power += enemy.get_base_attack()
-            enemy_power += 1
             result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
             result.append("You defend for %s!" % (player_power))
 

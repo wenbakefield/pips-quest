@@ -2,7 +2,6 @@ from GameState import GameState
 from Rune import Rune
 
 import pygame, sys, random, os
-import pygame_textinput
 from pygame.locals import *
 pygame.init()
  
@@ -15,7 +14,7 @@ LIGHT_GRAY = (150, 150, 150)
 # Game Setup
 FPS = 60
 clock = pygame.time.Clock()
-SCALE = 5
+SCALE = 3
 WINDOW_WIDTH = 320 * SCALE
 WINDOW_HEIGHT = 240 * SCALE
  
@@ -28,9 +27,12 @@ pygame.display.set_caption("Pip's Quest")
 pygame.mixer.init()
 
 sound_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_damage.wav'))
+sound_smash = pygame.mixer.Sound(os.path.join('sounds', 'sound_smash.wav'))
+sound_help = pygame.mixer.Sound(os.path.join('sounds', 'sound_help.wav'))
+sound_mortal_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_mortal_damage.wav'))
 
 sound_enemy_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_attack.wav'))
-sound_enemy_defend = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_defend.wav'))
+sound_enemy_die = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_die.wav'))
 
 sound_player_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_attack.wav'))
 sound_player_defend = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_defend.wav'))
@@ -77,8 +79,8 @@ font_text = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 5
 # text
 txt_title = font_title.render("Pip's Quest", False, WHITE, None)
 txt_fork = font_subtitle.render("Where To?", False, WHITE, None)
+txt_shop = font_subtitle.render("Buy Health?", False, WHITE, None)
 txt_wandering = font_subtitle.render("Wandering...", False, WHITE, None)
-txt_spell = font_text.render("Spell:                                          ", False, WHITE, BLACK)
 txt_game_over = font_title.render("Game Over!", False, WHITE, None)
 txt_game_win = font_title.render("You Win!", False, WHITE, None)
 
@@ -199,8 +201,6 @@ def rune_to_image(rune):
             return rune_ice_4
     else:
         return rune_arcane
-
-
 
 # mobs
 mob_bat = pygame.image.load(os.path.join('images', 'mob_bat', 'mob_bat.png')).convert_alpha()
@@ -417,10 +417,6 @@ rect_title = txt_title.get_rect()
 rect_title.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
 rect_title = rect_title.move((0, -400 / 5 * SCALE))
 
-rect_spell = txt_spell.get_rect()
-rect_spell.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_spell = rect_spell.move((0, 575 / 5 * SCALE))
-
 rect_subtitle = txt_fork.get_rect()
 rect_subtitle.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
 rect_subtitle = rect_subtitle.move((0, -500 / 5 * SCALE))
@@ -493,15 +489,19 @@ class rune_button():
         return False
 
 # buttons
-button_new_game = button(BLACK, (WINDOW_WIDTH // 2) - (125 / 5 * SCALE), (WINDOW_HEIGHT // 2) + (450 / 5 * SCALE), 250 / 5 * SCALE, 90 / 5 * SCALE, 'new game')
-button_scale = button(BLACK, (WINDOW_WIDTH // 2) - (125 / 5 * SCALE), (WINDOW_HEIGHT // 2) - (450 / 5 * SCALE), 250 / 5 * SCALE, 90 / 5 * SCALE, 'change scale')
-button_confirm = button(BLACK, (WINDOW_WIDTH // 2) - (125 / 5 * SCALE), (WINDOW_HEIGHT // 2) + (450 / 5 * SCALE), 250 / 5 * SCALE, 90 / 5 * SCALE, 'confirm')
-button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - (525 / 5 * SCALE), (WINDOW_HEIGHT // 2), (250  / 5 * SCALE), (90 / 5 * SCALE), 'left')
-button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + (275 / 5 * SCALE), (WINDOW_HEIGHT // 2), (250 / 5 * SCALE), (90 / 5 * SCALE), 'right')
-button_cast = button(BLACK, (WINDOW_WIDTH // 2) - (125 / 5 * SCALE), (WINDOW_HEIGHT // 2) + (450 / 5 * SCALE), 250 / 5 * SCALE, 90 / 5 * SCALE, 'cast!')
+button_new_game = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIGHT // 2) + (90 * SCALE), 50 * SCALE, 18 * SCALE, 'New Game')
+button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Left')
+button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + (55 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Right')
+button_cast = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE) + (25 * SCALE), (WINDOW_HEIGHT // 2) + (70 * SCALE), 36 * SCALE, 18 * SCALE, 'Cast!')
+button_continue = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIGHT // 2) + (90 * SCALE), 50 * SCALE, 18 * SCALE, 'Continue')
+button_heal_1 = button(BLACK, (WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Heal 1')
+button_heal_all = button(BLACK, (WINDOW_WIDTH // 2) + (55 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Heal All')
 
 game = GameState("", 0, "adaptive")
-rune_buttons = []
+hand_rune_buttons = []
+spell_rune_buttons = []
+lines = 0
+
 
 # The main function that controls the game
 def main () :
@@ -538,35 +538,38 @@ def draw_enemy(enemy_name):
     if enemy_name == "Spider":
         moving_sprites.add(Spider(0, 140 / 5 * SCALE))
 
-def draw_text_box(string_list):
+def draw_text_box(string_list, lines):
     if string_list:
         space = 0
-        for line in string_list:
-            txt_line = font_text.render(str(line), False, WHITE, BLACK)
-            screen.blit(txt_line, (5 / 5 * SCALE, (160 + space) / 5 * SCALE))
-            space += txt_line.get_rect().height * 2
+        for line in range(lines):
+            txt_line = font_text.render(str(string_list[line]), False, WHITE, BLACK)
+            screen.blit(txt_line, (SCALE, (32 + space) * SCALE))
+            space += 10
 
-def update_rune_buttons(player_hand):
+def draw_rune_buttons(rune_button_list, text, pos_x, pos_y):
     global screen
     offset = 0
 
-    x = (WINDOW_WIDTH // 2) - (40 * SCALE)
-    y = (WINDOW_HEIGHT // 2) + (40 * SCALE)
+    x = (WINDOW_WIDTH // 2) - (pos_x * SCALE)
+    y = (WINDOW_HEIGHT // 2) + (pos_y * SCALE)
+    button_size = 8 * SCALE
 
     rune_buttons = []
-    for rune in player_hand:
+    for rune in rune_button_list:
         rune_image = rune_to_image(rune)
         screen.blit(rune_image, (x + offset, y))
-        current_rune_button = rune_button(rune, BLACK, x + offset + 24, y + 110, 10 * SCALE, 10 * SCALE, "+")
+        current_rune_button = rune_button(rune, BLACK, x + offset + ((48 * SCALE * RUNE_SCALE) / 2) - (button_size / 2), y + (105 * SCALE * RUNE_SCALE), button_size, button_size, str(text))
         current_rune_button.draw(screen)
         rune_buttons.append(current_rune_button)
-        offset += 50 * SCALE * RUNE_SCALE
+        offset += 48 * SCALE * RUNE_SCALE
     return rune_buttons
 
 def draw_state(state):
     global game
-    global rune_buttons
+    global hand_rune_buttons
+    global spell_rune_buttons
     global SCALE
+    global lines
     if state == "title":
         events = pygame.event.get()
 
@@ -614,7 +617,7 @@ def draw_state(state):
                     pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(1)
                     if game.area_num >= 6:
-                        play_music('music_game_win.mp3')
+                        play_music('music_title.mp3')
                         game.state = "game_win"
                     else:
                         play_music_loop('music_wilderness.mp3')
@@ -624,7 +627,7 @@ def draw_state(state):
                     pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                     game.next_area(2)
                     if game.area_num >= 6:
-                        play_music('music_game_win.mp3')
+                        play_music('music_title.mp3')
                         game.state = "game_win"
                     else:
                         play_music_loop('music_wilderness.mp3')
@@ -659,7 +662,7 @@ def draw_state(state):
             if event.type == USEREVENT + 1:
                 moving_sprites.add(EncounterStart(0, 0))
                 play_music('music_encounter.mp3')
-                pygame.time.set_timer(pygame.USEREVENT + 2, 4000, 1)
+                pygame.time.set_timer(pygame.USEREVENT + 2, 3750, 1)
                 game.state = "encounter_start"
 
         draw_background(game.get_current_area_biome())
@@ -684,7 +687,7 @@ def draw_state(state):
         draw_background(game.get_current_area_biome())
         screen.blit(txt_wandering, rect_subtitle)
         moving_sprites.draw(screen)
-        moving_sprites.update(0.3)
+        moving_sprites.update(0.4)
         pygame.display.flip()
 
     if state == "encounter":
@@ -698,56 +701,122 @@ def draw_state(state):
 
             if event.type == MOUSEBUTTONDOWN :
 
-                for rune_button in rune_buttons:
+                for rune_button in hand_rune_buttons:
                     if rune_button.isOver(pos):
                         play_sound(sound_player_select)
                         game.player_state.current_spell.append(rune_button.rune)
                         game.player_state.current_hand.remove(rune_button.rune)
 
+                for rune_button in spell_rune_buttons:
+                    if rune_button.isOver(pos):
+                        play_sound(sound_player_select)
+                        game.player_state.current_hand.append(rune_button.rune)
+                        game.player_state.current_spell.remove(rune_button.rune)
+
                 if button_cast.isOver(pos):
                     if game.player_state.has_valid_current_spell():
                         play_sound(sound_player_spell)
-                        game.player_cast_spell()
+                        game.next_turn()
+                        pygame.time.set_timer(pygame.USEREVENT + 2, 2000, 1)
+                        game.state = "encounter_action"
+
+            if event.type == MOUSEMOTION :
+                if button_cast.isOver(pos):
+                    button_cast.color = LIGHT_GRAY
+                else:
+                    button_cast.color = BLACK
+
+        draw_background(game.get_current_area_biome())
+        
+        moving_sprites.draw(screen)
+        moving_sprites.update(0.05)
+
+        txt_enemy_name = font_subtitle.render(game.get_current_enemy_name(), False, WHITE, BLACK)
+        txt_enemy_stats = font_text.render(game.get_current_enemy_stats(), False, WHITE, BLACK)
+        txt_player_name = font_subtitle.render("Pip", False, WHITE, BLACK)
+        txt_player_stats = font_text.render(game.get_current_player_stats(), False, WHITE, BLACK)
+        txt_player_hand = font_subtitle.render("Hand:", False, WHITE, BLACK)
+        txt_player_spell = font_subtitle.render("Spell:", False, WHITE, BLACK)
+        
+        screen.blit(txt_enemy_name, (1 * SCALE, 1 * SCALE))
+        screen.blit(txt_enemy_stats, (1 * SCALE, 25 * SCALE))
+        screen.blit(txt_player_name, (1 * SCALE, WINDOW_HEIGHT - (95 * SCALE)))
+        screen.blit(txt_player_stats, (1 * SCALE, WINDOW_HEIGHT - (71 * SCALE)))
+        screen.blit(txt_player_hand, (1 * SCALE, WINDOW_HEIGHT - (31 * SCALE)))
+        screen.blit(txt_player_spell, (160 * SCALE, WINDOW_HEIGHT - (31 * SCALE)))
+
+        hand_rune_buttons = draw_rune_buttons(game.player_state.current_hand, "+", 120, 59)
+        spell_rune_buttons = draw_rune_buttons(game.player_state.current_spell, "-", -39, 59)
+
+
+        if game.player_state.has_valid_current_spell():
+            button_cast.draw(screen)
+
+        
+
+        pygame.display.flip()
+
+    if state == "encounter_action":
+        events = pygame.event.get()
+
+        for event in events :
+            pos = pygame.mouse.get_pos()
+            if event.type == QUIT :
+                pygame.quit()
+                sys.exit()
+
+            if event.type == USEREVENT + 2:
+                lines = 1
+                # enemy sprite state action
+                play_sound(sound_enemy_attack)
+                pygame.time.set_timer(pygame.USEREVENT + 3, 1000, 1)
+
+            if event.type == USEREVENT + 3:
+                lines = 2
+                if game.player_state.current_action == "defend":
+                    play_sound(sound_player_defend)
+                else:
+                    play_sound(sound_player_attack)
+                pygame.time.set_timer(pygame.USEREVENT + 4, 1000, 1)
+
+            if event.type == USEREVENT + 4:
+                lines = 3
+
+                if game.player_is_dead():
+                    play_sound(sound_mortal_damage)
+                elif game.current_enemy_is_dead():
+                    play_sound(sound_mortal_damage)
+                elif game.turn_result[2] == "SMAAAASH!!":
+                    play_sound(sound_smash)
+                elif game.turn_result[2] == "Nothing happens...":
+                    play_sound(sound_help)
+                else:
+                    play_sound(sound_damage)
+                pygame.time.set_timer(pygame.USEREVENT + 5, 2000, 1)
+
+            if event.type == USEREVENT + 5:
                         if game.player_is_dead():
                             moving_sprites.empty()
-                            game.state = "game_over"
                             play_music('music_game_over.mp3')
+                            game.state = "game_over"
 
-                        if game.current_enemy_is_dead():
+                        elif game.current_enemy_is_dead():
+                            lines = 0
                             moving_sprites.empty()
                             game.give_current_enemy_gold_to_player()
-                            if game.encounter_num >= 3:
-                                game.choose_next_area_fork()
-                                game.state = "fork"
-                            else:
-                                pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
-                                game.state = "wandering"
-                            play_music_loop('music_wilderness.mp3')
+                            play_music('music_win.mp3')
+                            game.state = "encounter_win"
+
+                        else:
+                            lines = 0
+                            game.state = "encounter"
 
         draw_background(game.get_current_area_biome())
         
         moving_sprites.draw(screen)
         moving_sprites.update(0.1)
 
-        txt_enemy_name = font_subtitle.render(game.get_current_enemy_name(), False, WHITE, BLACK)
-        txt_enemy_stats = font_text.render(game.get_current_enemy_stats(), False, WHITE, BLACK)
-        txt_player_name = font_subtitle.render("Pip", False, WHITE, BLACK)
-        txt_player_stats = font_text.render(game.get_current_player_stats(), False, WHITE, BLACK)
-
-        txt_player_hand = font_text.render(game.get_current_player_hand(), False, WHITE, BLACK)
-        
-        screen.blit(txt_enemy_name, (5 / 5 * SCALE, 10 / 5 * SCALE))
-        screen.blit(txt_enemy_stats, (5 / 5 * SCALE, 130 / 5 * SCALE))
-        screen.blit(txt_player_name, (5 / 5 * SCALE, WINDOW_HEIGHT - (150 / 5 * SCALE)))
-        screen.blit(txt_player_stats, (5 / 5 * SCALE, WINDOW_HEIGHT - (30 / 5 * SCALE)))
-
-        rune_buttons = update_rune_buttons(game.player_state.current_hand)
-
-        button_cast.draw(screen)
-
-        draw_text_box(game.turn_result)
-
-        pygame.display.flip()
+        draw_text_box(game.turn_result, lines)
 
     if state == "encounter_win":
             events = pygame.event.get()
@@ -760,25 +829,78 @@ def draw_state(state):
                     sys.exit()
 
                 if event.type == MOUSEBUTTONDOWN :
-                    if button_new_game.isOver(pos):
+                    if button_continue.isOver(pos):
                         play_sound(sound_player_select)
-                        play_music_loop('music_options.mp3')
-                        game = GameState()
-                        game.state = "options"
+                        if game.encounter_num >= 3:
+                            play_music_loop('music_shop.mp3')
+                            game.state = "shop"
+                        else:
+                            pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
+                            play_music_loop('music_wilderness.mp3')
+                            game.state = "wandering"
 
                 if event.type == MOUSEMOTION :
-                    if button_new_game.isOver(pos):
-                        button_new_game.color = LIGHT_GRAY
+                    if button_continue.isOver(pos):
+                        button_continue.color = LIGHT_GRAY
                     else:
-                        button_new_game.color = BLACK
+                        button_continue.color = BLACK
 
-            screen.blit(bg_title, rect_bg)
+            draw_background(game.get_current_area_biome())
             screen.blit(txt_game_win, rect_title)
-            txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
-            rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
-            screen.blit(txt_score, rect_score)
-            button_new_game.draw(screen)
+            button_continue.draw(screen)
             pygame.display.flip()
+
+    if state == "shop":
+        events = pygame.event.get()
+
+        for event in events :
+            pos = pygame.mouse.get_pos()
+
+            if event.type == QUIT :
+                pygame.quit()
+                sys.exit()
+
+            if event.type == MOUSEBUTTONDOWN :
+                if button_heal_1.isOver(pos):
+                    play_sound(sound_player_select)
+                    game.heal_player()
+                if button_heal_all.isOver(pos):
+                    play_sound(sound_player_heal)
+                    game.heal_player_all()
+                if button_continue.isOver(pos):
+                    play_sound(sound_player_select)
+                    game.choose_next_area_fork()
+                    play_music_loop('music_wilderness.mp3')
+                    game.state = "fork"
+
+            if event.type == MOUSEMOTION :
+                if button_heal_1.isOver(pos):
+                    button_heal_1.color = LIGHT_GRAY
+                else:
+                    button_heal_1.color = BLACK
+                if button_heal_all.isOver(pos):
+                    button_heal_all.color = LIGHT_GRAY
+                else:
+                    button_heal_all.color = BLACK
+                if button_continue.isOver(pos):
+                    button_continue.color = LIGHT_GRAY
+                else:
+                    button_continue.color = BLACK
+
+
+        txt_player_name = font_subtitle.render("Pip", False, WHITE, BLACK)
+        txt_player_stats = font_text.render(game.get_current_player_stats(), False, WHITE, BLACK)
+
+        draw_background(game.get_current_area_biome())
+        screen.blit(txt_shop, rect_subtitle)
+
+        screen.blit(txt_player_name, (1 * SCALE, WINDOW_HEIGHT - (95 * SCALE)))
+        screen.blit(txt_player_stats, (1 * SCALE, WINDOW_HEIGHT - (71 * SCALE)))
+
+        button_heal_1.draw(screen)
+        button_heal_all.draw(screen)
+        button_continue.draw(screen)
+        pygame.display.flip()
 
     if state == "game_over":
             events = pygame.event.get()
@@ -793,9 +915,9 @@ def draw_state(state):
                 if event.type == MOUSEBUTTONDOWN :
                     if button_new_game.isOver(pos):
                         play_sound(sound_player_select)
-                        play_music_loop('music_options.mp3')
-                        game = GameState()
-                        game.state = "options"
+                        play_music('music_title.mp3')
+                        game = GameState("", 0, "adaptive")
+                        game.state = "title"
 
                 if event.type == MOUSEMOTION :
                     if button_new_game.isOver(pos):
@@ -824,9 +946,9 @@ def draw_state(state):
                 if event.type == MOUSEBUTTONDOWN :
                     if button_new_game.isOver(pos):
                         play_sound(sound_player_select)
-                        play_music_loop('music_options.mp3')
-                        game = GameState()
-                        game.state = "options"
+                        play_music('music_title.mp3')
+                        game = GameState("", 0, "adaptive")
+                        game.state = "title"
 
                 if event.type == MOUSEMOTION :
                     if button_new_game.isOver(pos):

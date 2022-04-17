@@ -97,17 +97,17 @@ def choose_enemy_health_pool(difficulty):
 
 def choose_enemy_power_pool(difficulty):
     if difficulty < 0:
-        return [[4, 0.25],
-                [5, 0.50],
-                [6, 0.25]]
+        return [[1, 0.25],
+                [2, 0.25],
+                [3, 0.50]]
     if difficulty == 0:
-        return [[5, 0.25],
-                [6, 0.50],
-                [7, 0.25]]
+        return [[2, 0.25],
+                [3, 0.25],
+                [4, 0.50]]
     if difficulty > 0:
-        return [[6, 0.25],
-                [7, 0.50],
-                [8, 0.25]]
+        return [[3, 0.25],
+                [4, 0.25],
+                [5, 0.50]]
 
 def choose_player_element_pool():
     return [["F", 0.23],
@@ -274,15 +274,13 @@ class GameState:
         self.current_area.next_encounter(self.player_state, enemy)
 
     def next_turn(self):
+        self.player_state.cast_spell()
         self.current_area.current_encounter.do_turn(self.player_state)
         if not self.player_is_dead():
             self.turn_result = self.current_area.current_encounter.display_turn()
             self.current_area.current_encounter.choose_enemy_action()
-
-    def player_cast_spell(self):
-        self.player_state.cast_spell()
-        self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
-        self.next_turn()
+            self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
+            self.player_state.set_current_spell([])
 
     def current_enemy_is_dead(self):
         return self.current_area.current_encounter.get_enemy_state().is_dead()
@@ -292,6 +290,16 @@ class GameState:
 
     def give_current_enemy_gold_to_player(self):
         self.player_state.change_current_gold(self.current_area.current_encounter.enemy_state.get_gold())
+
+    def heal_player(self):
+        if self.player_state.current_gold > 0 and self.player_state.current_health < 30:
+            self.player_state.change_current_gold(-1)
+            self.player_state.change_current_health(1)
+        
+    def heal_player_all(self):
+        if self.player_state.current_gold > 0:
+            self.player_state.change_current_gold(-30 + self.player_state.get_current_health())
+            self.player_state.set_current_health(30)
 
     def get_current_enemy_species(self):
         return self.current_area.current_encounter.enemy_state.species.name

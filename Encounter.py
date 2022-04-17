@@ -74,7 +74,8 @@ class Encounter:
                 self.player_damage_blocked.append(0)
 
         elif enemy_action == "attack" and player_action == "defend":
-
+            enemy_power += 5
+            power_difference = abs(player_power - enemy_power)
             if enemy_power > player_power:
                 player.change_current_health(-power_difference)
                 self.player_damage_dealt.append(0)
@@ -109,6 +110,7 @@ class Encounter:
         if enemy_action == "attack" and player_action == "attack":
             result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
             result.append("You attack for %s!" % (player_power))
+            result.append("SMAAAASH!!")
 
         elif enemy_action == "defend" and player_action == "attack":
             result.append("The %s defends for %s!" % (enemy_name, enemy_power))
@@ -121,8 +123,9 @@ class Encounter:
                 result.append("The %s blocks your attack!" % (enemy_name))
 
         elif enemy_action == "attack" and player_action == "defend":
-            result.append("You defend for %s!" % (player_power))
+            enemy_power += 5
             result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
+            result.append("You defend for %s!" % (player_power))
 
             if enemy_power > player_power:
                 result.append("You take %s damage!" % (self.get_player_damage_taken()))
@@ -131,9 +134,9 @@ class Encounter:
                 result.append("You block the attack!")
 
         elif enemy_action == "defend" and player_action == "defend":
-            result.append("You both defend!")
+            result.append("The %s defends for %s!" % (enemy_name, enemy_power))
+            result.append("You defend for %s!" % (player_power))
             result.append("Nothing happens...")
-            result.append("How exciting...")
 
         else:
             result = []

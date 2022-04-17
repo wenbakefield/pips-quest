@@ -4,6 +4,7 @@ You will play as a hamster mage trying to collect as much gold as possible.
 You earn gold by defeating other creatures who are trying to stop you.
 
 You will have a collection of runes for each encounter that you can use to craft your spell.
+If you are unsatisfied with the hand that you were dealt, you can reroll it once per turn using the reroll button.
 Each rune has an element type and a power level.
 
 Offensive element types are: Fire (Red) and Spark (Yellow)
@@ -18,19 +19,18 @@ Press the + icon underneath a rune to add it to your spell.
 Press the - icon underneath a rune to remove it from your spell.
 
 Valid spells include:
-F10
-S9 S8 S9 A?
 E3 F2 F3
 I4 F3 E2 S3
-I1 F2 A? S4 F5
+I1 F2 A? S4 F3
 
 A cast button will appear once you have crafted a valid spell.
-Runes that you don't use will remain in your hand until the next battle.
+Runes that you don't use will remain in your hand for the current battle, but will be rerolled for the next battle.
 
 You will journey through five areas, with three encounters in each.
 At the end of each area, you will come across a shop.
 
 If you are running low on health, you can spend your gold to heal.
+The rate is 1 gold for 1 health point.
 However, you are scored at the end of your adventure based on how much gold you have, so spend wisely.
 
 After leaving the shop, you will choose an area to go to next.

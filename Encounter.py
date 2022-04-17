@@ -63,6 +63,7 @@ class Encounter:
 
         elif enemy_action == "defend" and player_action == "attack":
             enemy_power += enemy.get_base_defense()
+            power_difference = abs(player_power - enemy_power)
             if player_power > enemy_power:
                 enemy.change_current_health(-power_difference)
                 self.player_damage_dealt.append(power_difference)

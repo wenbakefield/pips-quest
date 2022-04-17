@@ -1,0 +1,38 @@
+Tutorial:
+
+You will play as a hamster mage trying to collect as much gold as possible.
+You earn gold by defeating other creatures who are trying to stop you.
+
+You will have a collection of runes for each encounter that you can use to craft your spell.
+Each rune has an element type and a power level.
+
+Offensive element types are: Fire (Red) and Spark (Yellow)
+Defensive element types are: Ice (Blue) and Earth (Green)
+The wildcard element type is: Arcane (Purple)
+The first rune in your spell will determine whether the spell is offensive or defensive.
+You may not use an arcane rune as the first rune in your spell.
+
+In your spell, you can chain runes together if their power level differs by 1.
+Arcane runes will automatically be given a power level that satisfies this rule.
+Press the + icon underneath a rune to add it to your spell.
+Press the - icon underneath a rune to remove it from your spell.
+
+Valid spells include:
+F10
+S9 S8 S9 A?
+E3 F2 F3
+I4 F3 E2 S3
+I1 F2 A? S4 F5
+
+A cast button will appear once you have crafted a valid spell.
+Runes that you don't use will remain in your hand until the next battle.
+
+You will journey through five areas, with three encounters in each.
+At the end of each area, you will come across a shop.
+
+If you are running low on health, you can spend your gold to heal.
+However, you are scored at the end of your adventure based on how much gold you have, so spend wisely.
+
+After leaving the shop, you will choose an area to go to next.
+
+Good luck, and have fun!

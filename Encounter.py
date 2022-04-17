@@ -49,7 +49,7 @@ class Encounter:
 
         player_action = player.get_current_action()
         enemy_action = enemy.get_current_action()
-        player_power = 99 #player.get_current_power()
+        player_power = player.get_current_power()
         enemy_power = enemy.get_current_power()
         power_difference = abs(player_power - enemy_power)
 

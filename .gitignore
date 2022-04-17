@@ -365,3 +365,5 @@ FodyWeavers.xsd
 /dist/HamsterGame
 /dist
 /env
+/build/main
+/main.spec

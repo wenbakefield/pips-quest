@@ -54,6 +54,7 @@ class Encounter:
         power_difference = abs(player_power - enemy_power)
 
         if enemy_action == "attack" and player_action == "attack":
+            enemy_power += enemy.get_base_attack()
             player.change_current_health(-enemy_power)
             enemy.change_current_health(-player_power)
             self.player_damage_dealt.append(player_power)
@@ -61,7 +62,7 @@ class Encounter:
             self.player_damage_blocked.append(0)
 
         elif enemy_action == "defend" and player_action == "attack":
-
+            enemy_power += enemy.get_base_defense()
             if player_power > enemy_power:
                 enemy.change_current_health(-power_difference)
                 self.player_damage_dealt.append(power_difference)
@@ -74,7 +75,8 @@ class Encounter:
                 self.player_damage_blocked.append(0)
 
         elif enemy_action == "attack" and player_action == "defend":
-            enemy_power += 5
+            enemy_power += enemy.get_base_attack()
+            enemy_power += 2
             power_difference = abs(player_power - enemy_power)
             if enemy_power > player_power:
                 player.change_current_health(-power_difference)
@@ -108,11 +110,13 @@ class Encounter:
         enemy_name = enemy.print_name()
 
         if enemy_action == "attack" and player_action == "attack":
+            enemy_power += enemy.get_base_attack()
             result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
             result.append("You attack for %s!" % (player_power))
             result.append("SMAAAASH!!")
 
         elif enemy_action == "defend" and player_action == "attack":
+            enemy_power += enemy.get_base_defense()
             result.append("The %s defends for %s!" % (enemy_name, enemy_power))
             result.append("You attack for %s!" % (player_power))
 
@@ -123,7 +127,8 @@ class Encounter:
                 result.append("The %s blocks your attack!" % (enemy_name))
 
         elif enemy_action == "attack" and player_action == "defend":
-            enemy_power += 5
+            enemy_power += enemy.get_base_attack()
+            enemy_power += 2
             result.append("The %s attacks for %s!" % (enemy_name, enemy_power))
             result.append("You defend for %s!" % (player_power))
 
@@ -134,6 +139,7 @@ class Encounter:
                 result.append("You block the attack!")
 
         elif enemy_action == "defend" and player_action == "defend":
+            enemy_power += enemy.get_base_defense()
             result.append("The %s defends for %s!" % (enemy_name, enemy_power))
             result.append("You defend for %s!" % (player_power))
             result.append("Nothing happens...")

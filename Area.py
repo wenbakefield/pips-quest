@@ -2,37 +2,37 @@ from Species import Species
 from Encounter import Encounter
 def choose_enemy_species_pool(biome):
     if biome == "Desert":
-        return [[Species("Meerkat"), 0.6],
+        return [[Species("Bunny"), 0.4],
                 [Species("Bullfrog"), 0.0],
                 [Species("Bat"), 0.2],
                 [Species("Rat"), 0.0],
-                [Species("Spider"), 0.2]]
+                [Species("Spider"), 0.4]]
     if biome == "Cave":
-        return [[Species("Meerkat"), 0.0],
+        return [[Species("Bunny"), 0.0],
                 [Species("Bullfrog"), 0.0],
-                [Species("Bat"), 0.6],
+                [Species("Bat"), 0.4],
                 [Species("Rat"), 0.2],
-                [Species("Spider"), 0.2]]
+                [Species("Spider"), 0.4]]
     if biome == "Swamp":
-        return [[Species("Meerkat"), 0.0],
-                [Species("Bullfrog"), 0.6],
+        return [[Species("Bunny"), 0.0],
+                [Species("Bullfrog"), 0.4],
+                [Species("Bat"), 0.0],
+                [Species("Rat"), 0.4],
+                [Species("Spider"), 0.2]]
+    if biome == "Forest":
+        return [[Species("Bunny"), 0.2],
+                [Species("Bullfrog"), 0.2],
                 [Species("Bat"), 0.2],
                 [Species("Rat"), 0.2],
-                [Species("Spider"), 0.0]]
-    if biome == "Forest":
-        return [[Species("Meerkat"), 0.0],
-                [Species("Bullfrog"), 0.1],
-                [Species("Bat"), 0.1],
-                [Species("Rat"), 0.2],
-                [Species("Spider"), 0.6]]
+                [Species("Spider"), 0.2]]
     if biome == "Grassland":
-        return [[Species("Meerkat"), 0.2],
+        return [[Species("Bunny"), 0.4],
                 [Species("Bullfrog"), 0.0],
-                [Species("Bat"), 0.1],
-                [Species("Rat"), 0.6],
-                [Species("Spider"), 0.1]]
+                [Species("Bat"), 0.0],
+                [Species("Rat"), 0.4],
+                [Species("Spider"), 0.2]]
     else:
-        return [[Species("Meerkat"), 0.2],
+        return [[Species("Bunny"), 0.2],
                 [Species("Bullfrog"), 0.2],
                 [Species("Bat"), 0.2],
                 [Species("Rat"), 0.2],

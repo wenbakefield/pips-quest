@@ -237,6 +237,7 @@ class GameState:
         self.next_area2 = "none"
         self.state = "title"
         self.turn_result = []
+        self.rerolls = 1
 
     # game logic
 
@@ -276,6 +277,7 @@ class GameState:
     def next_turn(self):
         self.player_state.cast_spell()
         self.current_area.current_encounter.do_turn(self.player_state)
+        self.rerolls = 1
         if not self.player_is_dead():
             self.turn_result = self.current_area.current_encounter.display_turn()
             self.current_area.current_encounter.choose_enemy_action()
@@ -301,6 +303,16 @@ class GameState:
         if self.player_state.current_gold >= amount:
             self.player_state.change_current_gold(-amount)
             self.player_state.set_current_health(30)
+        else:
+            while self.player_state.current_gold > 0:
+                self.heal_player()
+
+    def reroll_hand(self):
+        if self.rerolls > 0:
+            self.player_state.set_current_hand([])
+            self.player_state.set_current_spell([])
+            self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
+            self.rerolls -= 1
 
     def get_current_enemy_species(self):
         return self.current_area.current_encounter.enemy_state.species.name

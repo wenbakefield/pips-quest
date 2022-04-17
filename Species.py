@@ -8,7 +8,7 @@ class Species:
         self.special = []
         self.gold_drop = []
 
-        if name == "Meerkat":
+        if name == "Bunny":
             self.attack_mod = [0, 1, 2, 3]
             self.defense_mod = [0, 1, 2, 3]
             self.health_mod = [2, 3, 4, 5]

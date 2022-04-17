@@ -91,4 +91,4 @@ class Enemy:
         return self.trait.get_name() + " " + self.species.get_name()
 
     def print_stats(self):
-        return "Level: " + str(self.level + 1) + " | Health: " + str(self.current_health) + " | Intent: " + str(self.current_action)
+        return "Level: " + str(self.level + 1) + " | Health: " + str(self.current_health) + " | Next Action: " + str(self.current_action)

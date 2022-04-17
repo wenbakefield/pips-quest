@@ -48,7 +48,7 @@ def play_enemy_music(species):
         file_name = 'music_bat.mp3'
     if species == "Bullfrog":
         file_name = 'music_bullfrog.mp3'
-    if species == "Meerkat":
+    if species == "Bunny":
         file_name = 'music_meerkat.mp3'
     if species == "Rat":
         file_name = 'music_rat.mp3'
@@ -496,6 +496,7 @@ button_cast = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE) + (25 * SCALE), (
 button_continue = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIGHT // 2) + (90 * SCALE), 50 * SCALE, 18 * SCALE, 'Continue')
 button_heal_1 = button(BLACK, (WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Heal 1')
 button_heal_all = button(BLACK, (WINDOW_WIDTH // 2) + (55 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Heal All')
+button_reroll = button(BLACK, 1 * SCALE, (WINDOW_HEIGHT // 2) + (70 * SCALE), 36 * SCALE, 18 * SCALE, 'Reroll!')
 
 game = GameState("", 0, "adaptive")
 hand_rune_buttons = []
@@ -531,7 +532,7 @@ def draw_enemy(enemy_name):
         moving_sprites.add(Bat(0, 0))
     if enemy_name == "Bullfrog":
         moving_sprites.add(Bullfrog(0, 140 / 5 * SCALE))
-    if enemy_name == "Meerkat":
+    if enemy_name == "Bunny":
         moving_sprites.add(Meerkat(0, 140 / 5 * SCALE))
     if enemy_name == "Rat":
         moving_sprites.add(Rat(0, 140 / 5 * SCALE))
@@ -720,11 +721,20 @@ def draw_state(state):
                         pygame.time.set_timer(pygame.USEREVENT + 2, 2000, 1)
                         game.state = "encounter_action"
 
+                if button_reroll.isOver(pos):
+                    if game.rerolls > 0:
+                        play_sound(sound_player_heal)
+                        game.reroll_hand()
+
             if event.type == MOUSEMOTION :
                 if button_cast.isOver(pos):
                     button_cast.color = LIGHT_GRAY
                 else:
                     button_cast.color = BLACK
+                if button_reroll.isOver(pos):
+                    button_reroll.color = LIGHT_GRAY
+                else:
+                    button_reroll.color = BLACK
 
         draw_background(game.get_current_area_biome())
         
@@ -748,11 +758,11 @@ def draw_state(state):
         hand_rune_buttons = draw_rune_buttons(game.player_state.current_hand, "+", 120, 59)
         spell_rune_buttons = draw_rune_buttons(game.player_state.current_spell, "-", -39, 59)
 
-
         if game.player_state.has_valid_current_spell():
             button_cast.draw(screen)
 
-        
+        if game.rerolls > 0:
+            button_reroll.draw(screen)
 
         pygame.display.flip()
 

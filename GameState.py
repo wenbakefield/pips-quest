@@ -297,8 +297,9 @@ class GameState:
             self.player_state.change_current_health(1)
         
     def heal_player_all(self):
-        if self.player_state.current_gold > 0:
-            self.player_state.change_current_gold(-30 + self.player_state.get_current_health())
+        amount = 30 - self.player_state.get_current_health()
+        if self.player_state.current_gold >= amount:
+            self.player_state.change_current_gold(-amount)
             self.player_state.set_current_health(30)
 
     def get_current_enemy_species(self):

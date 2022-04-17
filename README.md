@@ -1,7 +1,6 @@
-# HamsterGame
+# Pip's Quest
+
+A game involving a hamster wizard, demonic critters, and an evil snake. Hastily hacked together in Python.
 
 Download the latest release to play!
-
-https://github.com/wenbakefield/HamsterGame/releases
-
-Assets -> Download HamsterGame.zip -> Unzip -> Open HamsterGame folder -> Run HamsterGame.exe (Windows only, sorry!)
+https://github.com/wenbakefield/PipsQuest/releases

@@ -572,11 +572,11 @@ button_new_game = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIG
 button_load_game = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIGHT // 2) + (95 * SCALE), 50 * SCALE, 18 * SCALE, 'Load Game')
 button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Left')
 button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + (55 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Right')
-button_cast = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE) + (25 * SCALE), (WINDOW_HEIGHT // 2) + (70 * SCALE), 36 * SCALE, 18 * SCALE, 'Cast!')
+button_cast = button(BLACK, (WINDOW_WIDTH // 2) + (1 * SCALE), (WINDOW_HEIGHT // 2) + (70 * SCALE), 37 * SCALE, 18 * SCALE, 'Cast!')
 button_continue = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIGHT // 2) + (90 * SCALE), 50 * SCALE, 18 * SCALE, 'Continue')
 button_heal_1 = button(BLACK, (WINDOW_WIDTH // 2) - (120 * SCALE), (WINDOW_HEIGHT // 2) - (7 * SCALE), 50 * SCALE, 18 * SCALE, 'Heal 1')
 button_heal_all = button(BLACK, (WINDOW_WIDTH // 2) + (70 * SCALE), (WINDOW_HEIGHT // 2) - (7 * SCALE), 50 * SCALE, 18 * SCALE, 'Heal All')
-button_reroll = button(BLACK, 1 * SCALE, (WINDOW_HEIGHT // 2) + (70 * SCALE), 36 * SCALE, 18 * SCALE, 'Reroll!')
+button_reroll = button(BLACK, 1 * SCALE, (WINDOW_HEIGHT // 2) + (70 * SCALE), 38 * SCALE, 18 * SCALE, 'Reroll!')
 
 game = GameState(options_seed, options_difficulty, options_adaptive_difficulty)
 hand_rune_buttons = []
@@ -849,7 +849,7 @@ def draw_state(state):
         screen.blit(txt_player_name, (1 * SCALE, WINDOW_HEIGHT - (95 * SCALE)))
         screen.blit(txt_player_stats, (1 * SCALE, WINDOW_HEIGHT - (71 * SCALE)))
         screen.blit(txt_player_hand, (1 * SCALE, WINDOW_HEIGHT - (31 * SCALE)))
-        screen.blit(txt_player_spell, (160 * SCALE, WINDOW_HEIGHT - (31 * SCALE)))
+        screen.blit(txt_player_spell, (161 * SCALE, WINDOW_HEIGHT - (31 * SCALE)))
 
         txt_current_area = font_subtitle.render("Area " + str(game.area_num) + "-" + str(game.encounter_num), False, WHITE, BLACK)
         screen.blit(txt_current_area, (255 * SCALE, (1 * SCALE)))

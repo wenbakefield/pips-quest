@@ -233,7 +233,7 @@ class GameState:
         self.current_area = Area(self.area_num, "none")
         self.next_area1 = "none"
         self.next_area2 = "none"
-        self.state = "encounter_win"
+        self.state = "title"
         self.random_state = random.getstate()
         self.turn_result = []
         self.rerolls = 1
@@ -275,9 +275,9 @@ class GameState:
 
     def next_encounter(self):
         if self.encounter_num > 0:
-            self.encounters_damage_dealt.append(sum(self.current_area.current_encounter.get_player_damage_dealt()))
-            self.encounters_damage_taken.append(sum(self.current_area.current_encounter.get_player_damage_taken()))
-            self.encounters_damage_blocked.append(sum(self.current_area.current_encounter.get_player_damage_blocked()))
+            self.encounters_damage_dealt.append(sum(self.current_area.current_encounter.player_damage_dealt))
+            self.encounters_damage_taken.append(sum(self.current_area.current_encounter.player_damage_taken))
+            self.encounters_damage_blocked.append(sum(self.current_area.current_encounter.player_damage_blocked))
             self.encounters_num_turns.append(self.current_area.current_encounter.get_turn())
             self.enemies_defeated.append(self.current_area.current_encounter.get_enemy_state().get_species().get_name())
 

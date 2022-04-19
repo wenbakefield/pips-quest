@@ -48,6 +48,15 @@ class Species:
             self.special = [1, 1, 2, 2]
             self.gold_drop = [2, 3, 4, 5]
 
+        if name == "Snake":
+            self.attack_mod = [0, 0, 0, 0, 0]
+            self.defense_mod = [0, 0, 0, 0, 0]
+            self.health_mod = [0, 0, 0, 0, 0]
+            self.action_pool = [["attack", 0.5], ["defend", 0.5]]
+            self.special = [0, 0, 0, 0, 0]
+            self.gold_drop = [0, 0, 0, 0, 0]
+
+
     def __repr__(self):
         return "<Species |Name:%s |Attack Mod:%s |Defense Mod:%s |Health Mod:%s |Attack Rate:%s |Block Rate:%s |Special:%s |Gold Drop:%s >" % (self.name, self.attack_mod, self.defense_mod, self.health_mod, self.attack_rate, self.block_rate, self.special, self.gold_drop)
     def __str__(self):

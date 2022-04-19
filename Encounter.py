@@ -47,6 +47,8 @@ class Encounter:
         player = self.get_player_state()
         enemy = self.get_enemy_state()
 
+        player_health = player.get_current_health()
+        enemy_health = enemy.get_current_health()
         player_action = player.get_current_action()
         enemy_action = enemy.get_current_action()
         player_power = player.get_current_power()
@@ -55,6 +57,10 @@ class Encounter:
 
         if enemy_action == "attack" and player_action == "attack":
             enemy_power += enemy.get_base_attack()
+            if enemy_power > player_health:
+                enemy_power = player_health
+            if player_power > enemy_health:
+                player_power = enemy_health
             player.change_current_health(-enemy_power)
             enemy.change_current_health(-player_power)
             self.player_damage_dealt.append(player_power)
@@ -65,6 +71,8 @@ class Encounter:
             enemy_power += enemy.get_base_defense()
             power_difference = abs(player_power - enemy_power)
             if player_power > enemy_power:
+                if power_difference > enemy_health:
+                    power_difference = enemy_health
                 enemy.change_current_health(-power_difference)
                 self.player_damage_dealt.append(power_difference)
                 self.player_damage_taken.append(0)
@@ -79,6 +87,8 @@ class Encounter:
             enemy_power += enemy.get_base_attack()
             power_difference = abs(player_power - enemy_power)
             if enemy_power > player_power:
+                if power_difference > player_health:
+                    power_difference = player_health
                 player.change_current_health(-power_difference)
                 self.player_damage_dealt.append(0)
                 self.player_damage_taken.append(power_difference)

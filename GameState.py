@@ -78,9 +78,9 @@ def choose_enemy_trait_pool():
 
 def choose_enemy_health_pool(difficulty):
     if difficulty < 0:
-        return [[6, 0.50],
-                [7, 0.25],
-                [8, 0.25],
+        return [[6, 0.33],
+                [7, 0.33],
+                [8, 0.33],
                 [9, 0.00]]
     if difficulty == 0:
         return [[6, 0.25],
@@ -89,9 +89,9 @@ def choose_enemy_health_pool(difficulty):
                 [9, 0.25]]
     if difficulty > 0:
         return [[6, 0.00],
-                [7, 0.25],
-                [8, 0.25],
-                [9, 0.50]]
+                [7, 0.33],
+                [8, 0.33],
+                [9, 0.33]]
 
 def choose_enemy_power_pool(difficulty):
     if difficulty < 0:
@@ -233,7 +233,7 @@ class GameState:
         self.current_area = Area(self.area_num, "none")
         self.next_area1 = "none"
         self.next_area2 = "none"
-        self.state = "title"
+        self.state = "encounter_win"
         self.random_state = random.getstate()
         self.turn_result = []
         self.rerolls = 1
@@ -241,6 +241,7 @@ class GameState:
         self.encounters_damage_taken = []
         self.encounters_damage_blocked = []
         self.encounters_num_turns = []
+        self.enemies_defeated = []
 
     # game logic
 
@@ -273,10 +274,17 @@ class GameState:
         self.encounter_num = 0
 
     def next_encounter(self):
+        if self.encounter_num > 0:
+            self.encounters_damage_dealt.append(sum(self.current_area.current_encounter.get_player_damage_dealt()))
+            self.encounters_damage_taken.append(sum(self.current_area.current_encounter.get_player_damage_taken()))
+            self.encounters_damage_blocked.append(sum(self.current_area.current_encounter.get_player_damage_blocked()))
+            self.encounters_num_turns.append(self.current_area.current_encounter.get_turn())
+            self.enemies_defeated.append(self.current_area.current_encounter.get_enemy_state().get_species().get_name())
+
         self.encounter_num += 1
         self.player_state.set_current_hand(generate_player_hand(self.player_state.get_current_hand(), self.player_element_pool, self.player_power_pool))
         if self.area_num > 5:
-            enemy = Enemy(4, Species("Snake"), Trait("Slippery", 0, 0, 0), 30, 30, 8, 8, 5, "defend", 30)
+            enemy = Enemy(4, Species("Snake"), Trait("Slippery", 0, 0, 0), 30, 30, 7, 7, 5, "defend", 30)
         else:
             enemy = generate_enemy(self.current_area.get_enemy_level_pool(), self.current_area.get_enemy_species_pool(), self.enemy_trait_pool, self.enemy_health_pool, self.enemy_power_pool)
         self.current_area.next_encounter(self.player_state, enemy)

@@ -9,13 +9,21 @@ pygame.init()
 config = configparser.ConfigParser()
 config.read('options.ini')
 
-options_scale = config['Options']['scale']
+options_scale = config['Graphics']['scale']
 if options_scale == "":
     options_scale = "3"
 
-options_seed = config['Options']['seed']
-options_difficulty = config['Options']['difficulty']
-options_adaptive_difficulty = config['Options']['adaptive_difficulty']
+options_seed = config['Gameplay']['seed']
+options_difficulty = config['Gameplay']['difficulty']
+options_adaptive_difficulty = config['Gameplay']['adaptive_difficulty']
+
+options_sfx_vol = config['Audio']['sfx_volume']
+if options_sfx_vol == "":
+    options_sfx_vol = "0.2"
+
+options_mus_vol = config['Audio']['music_volume']
+if options_mus_vol == "":
+    options_mus_vol = "0.3"
 
 # Colours
 BLACK = (0, 0, 0)
@@ -36,6 +44,9 @@ pygame.display.set_caption("Pip's Quest")
 # assets
 
 # sounds
+VOLUME_SFX = float(options_sfx_vol)
+VOLUME_MUSIC = float(options_mus_vol)
+
 pygame.mixer.init()
 
 sound_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_damage.wav'))
@@ -72,16 +83,19 @@ def play_enemy_music(species):
 
 def play_music_loop(file_name):
     pygame.mixer.music.load(os.path.join('sounds', file_name))
+    pygame.mixer.music.set_volume(VOLUME_MUSIC)
     pygame.mixer.music.play(-1)
 
 def play_music(file_name):
     pygame.mixer.music.load(os.path.join('sounds', file_name))
+    pygame.mixer.music.set_volume(VOLUME_MUSIC)
     pygame.mixer.music.play()
 
 def stop_music():
     pygame.mixer.music.stop()
 
 def play_sound(sound):
+    sound.set_volume(VOLUME_SFX)
     sound.play()
 
 # fonts
@@ -93,7 +107,7 @@ font_text = pygame.font.Font(os.path.join('fonts', 'AGoblinAppears-o2aV.ttf'), 5
 # text
 txt_title = font_title.render("Pip's Quest", False, WHITE, None)
 txt_fork = font_subtitle.render("Where To?", False, WHITE, None)
-txt_shop = font_subtitle.render("Buy Health?", False, WHITE, None)
+txt_shop = font_subtitle.render("Buy Food?", False, WHITE, None)
 txt_wandering = font_subtitle.render("Wandering...", False, WHITE, None)
 txt_game_over = font_title.render("Game Over!", False, WHITE, None)
 txt_game_win = font_title.render("You Win!", False, WHITE, None)
@@ -116,6 +130,19 @@ bg_grassland = pygame.transform.scale(bg_grassland, (WINDOW_WIDTH, WINDOW_HEIGHT
 
 bg_swamp = pygame.image.load(os.path.join('images', 'bg_swamp.png')).convert()
 bg_swamp = pygame.transform.scale(bg_swamp, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+bg_shop = pygame.image.load(os.path.join('images', 'bg_shop.png')).convert()
+bg_shop = pygame.transform.scale(bg_shop, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+fg_shop = pygame.image.load(os.path.join('images', 'fg_shop.png')).convert_alpha()
+fg_shop = pygame.transform.scale(fg_shop, (WINDOW_WIDTH, WINDOW_HEIGHT))
+
+# food
+food_berry = pygame.image.load(os.path.join('images', 'food', 'strawberry.png')).convert_alpha()
+food_berry = pygame.transform.scale(food_berry, (35 * SCALE * 0.5, 29 * SCALE * 0.5))
+
+food_apple = pygame.image.load(os.path.join('images', 'food', 'apple.png')).convert_alpha()
+food_apple = pygame.transform.scale(food_apple, (24 * SCALE * 1.5, 26 * SCALE * 1.5))
 
 # runes
 RUNE_SCALE = 0.5
@@ -348,7 +375,7 @@ class Snake(pygame.sprite.Sprite):
         self.is_animating = True
         for i in range(1, 5):
             image = pygame.image.load(os.path.join('images', 'mob_snake', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            image = pygame.transform.scale(image, (140 * SCALE, 140 * SCALE))
             self.idle_sprites.append(image)
         self.current_sprite = 0
         self.image = self.idle_sprites[self.current_sprite]
@@ -375,6 +402,32 @@ class Spider(pygame.sprite.Sprite):
         for i in range(1, 5):
             image = pygame.image.load(os.path.join('images', 'mob_spider', 'idle', str(i) + '.png')).convert_alpha()
             image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            self.idle_sprites.append(image)
+        self.current_sprite = 0
+        self.image = self.idle_sprites[self.current_sprite]
+        self.rect = self.image.get_rect()
+        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+        self.rect = self.rect.move((pos_x, pos_y))
+
+    def animate(self):
+        self.is_animating = True
+
+    def update(self, speed):
+        if self.is_animating == True:
+            self.current_sprite += speed
+            if self.current_sprite >= len(self.idle_sprites):
+                self.current_sprite = 0
+                self.is_animating = True
+            self.image = self.idle_sprites[int(self.current_sprite)]
+
+class Dog(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__()
+        self.idle_sprites = []
+        self.is_animating = True
+        for i in range(1, 5):
+            image = pygame.image.load(os.path.join('images', 'npc_dog', 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (120 * SCALE, 140 * SCALE))
             self.idle_sprites.append(image)
         self.current_sprite = 0
         self.image = self.idle_sprites[self.current_sprite]
@@ -429,19 +482,31 @@ rect_bg = rect_bg.move((0, 0))
 
 rect_title = txt_title.get_rect()
 rect_title.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_title = rect_title.move((0, -400 / 5 * SCALE))
+rect_title = rect_title.move((0, -80 * SCALE))
+
+rect_game_win = txt_game_win.get_rect()
+rect_game_win.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+rect_game_win = rect_game_win.move((0, -80 * SCALE))
+
+rect_game_over = txt_game_over.get_rect()
+rect_game_over.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+rect_game_over = rect_game_over.move((0, -80 * SCALE))
+
+rect_shop = txt_shop.get_rect()
+rect_shop.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
+rect_shop = rect_shop.move((0, -80 * SCALE))
 
 rect_subtitle = txt_fork.get_rect()
 rect_subtitle.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_subtitle = rect_subtitle.move((0, -500 / 5 * SCALE))
+rect_subtitle = rect_subtitle.move((0, -100 * SCALE))
 
 rect_mob = mob_bat.get_rect()
 rect_mob.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_mob = rect_mob.move((0, 150 / 5 * SCALE))
+rect_mob = rect_mob.move((0, 30 * SCALE))
 
 rect_boss = mob_snake.get_rect()
 rect_boss.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-rect_boss = rect_boss.move((0, 150 / 5 * SCALE))
+rect_boss = rect_boss.move((0, 30 * SCALE))
 
 class button():
     def __init__(self, color, x, y, width, height, text=''):
@@ -509,8 +574,8 @@ button_fork_left = button(BLACK, (WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HE
 button_fork_right = button(BLACK, (WINDOW_WIDTH // 2) + (55 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Right')
 button_cast = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE) + (25 * SCALE), (WINDOW_HEIGHT // 2) + (70 * SCALE), 36 * SCALE, 18 * SCALE, 'Cast!')
 button_continue = button(BLACK, (WINDOW_WIDTH // 2) - (25 * SCALE), (WINDOW_HEIGHT // 2) + (90 * SCALE), 50 * SCALE, 18 * SCALE, 'Continue')
-button_heal_1 = button(BLACK, (WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Heal 1')
-button_heal_all = button(BLACK, (WINDOW_WIDTH // 2) + (55 * SCALE), (WINDOW_HEIGHT // 2), 50 * SCALE, 18 * SCALE, 'Heal All')
+button_heal_1 = button(BLACK, (WINDOW_WIDTH // 2) - (120 * SCALE), (WINDOW_HEIGHT // 2) - (7 * SCALE), 50 * SCALE, 18 * SCALE, 'Heal 1')
+button_heal_all = button(BLACK, (WINDOW_WIDTH // 2) + (70 * SCALE), (WINDOW_HEIGHT // 2) - (7 * SCALE), 50 * SCALE, 18 * SCALE, 'Heal All')
 button_reroll = button(BLACK, 1 * SCALE, (WINDOW_HEIGHT // 2) + (70 * SCALE), 36 * SCALE, 18 * SCALE, 'Reroll!')
 
 game = GameState(options_seed, options_difficulty, options_adaptive_difficulty)
@@ -546,15 +611,15 @@ def draw_enemy(enemy_name):
     if enemy_name == "Bat":
         moving_sprites.add(Bat(0, 0))
     if enemy_name == "Bullfrog":
-        moving_sprites.add(Bullfrog(0, 140 / 5 * SCALE))
+        moving_sprites.add(Bullfrog(0, 25 * SCALE))
     if enemy_name == "Bunny":
-        moving_sprites.add(Meerkat(0, 140 / 5 * SCALE))
+        moving_sprites.add(Meerkat(0, 25 * SCALE))
     if enemy_name == "Rat":
-        moving_sprites.add(Rat(0, 140 / 5 * SCALE))
+        moving_sprites.add(Rat(0, 25 * SCALE))
     if enemy_name == "Spider":
-        moving_sprites.add(Spider(0, 140 / 5 * SCALE))
+        moving_sprites.add(Spider(0, 25 * SCALE))
     if enemy_name == "Snake":
-        moving_sprites.add(Snake(0, 140 / 5 * SCALE))
+        moving_sprites.add(Snake(0, 0))
 
 def draw_text_box(string_list, lines):
     if string_list:
@@ -879,6 +944,7 @@ def draw_state(state):
                     if button_continue.isOver(pos):
                         play_sound(sound_player_select)
                         if game.encounter_num >= 3:
+                            moving_sprites.add(Dog(0, 25 * SCALE))
                             play_music_loop('music_shop.mp3')
                             game.state = "shop"
                         else:
@@ -893,7 +959,7 @@ def draw_state(state):
                         button_continue.color = BLACK
 
             draw_background(game.get_current_area_biome())
-            screen.blit(txt_game_win, rect_title)
+            screen.blit(txt_game_win, rect_game_win)
             button_continue.draw(screen)
             pygame.display.flip()
 
@@ -917,11 +983,13 @@ def draw_state(state):
                 if button_continue.isOver(pos):
                     play_sound(sound_player_select)
                     if game.area_num < 5:
+                        moving_sprites.empty()
                         game.choose_next_area_fork()
                         play_music_loop('music_wilderness.mp3')
                         game.state = "fork"
                         game.save()
                     else:
+                        moving_sprites.empty()
                         pygame.time.set_timer(pygame.USEREVENT + 1, 2000, 1)
                         game.next_area(3)
                         play_music_loop('music_wilderness.mp3')
@@ -941,14 +1009,24 @@ def draw_state(state):
                 else:
                     button_continue.color = BLACK
 
+
+        screen.blit(bg_shop, rect_bg)
+
+        moving_sprites.draw(screen)
+        moving_sprites.update(0.03)
+
+        screen.blit(fg_shop, rect_bg)
+
         txt_player_name = font_subtitle.render("Pip", False, WHITE, BLACK)
         txt_player_stats = font_text.render(game.get_current_player_stats(), False, WHITE, BLACK)
 
-        draw_background(game.get_current_area_biome())
-        screen.blit(txt_shop, rect_subtitle)
+        screen.blit(txt_shop, rect_shop)
 
-        screen.blit(txt_player_name, (1 * SCALE, WINDOW_HEIGHT - (95 * SCALE)))
-        screen.blit(txt_player_stats, (1 * SCALE, WINDOW_HEIGHT - (71 * SCALE)))
+        screen.blit(txt_player_name, (1 * SCALE, WINDOW_HEIGHT - (45 * SCALE)))
+        screen.blit(txt_player_stats, (1 * SCALE, WINDOW_HEIGHT - (21 * SCALE)))
+
+        screen.blit(food_berry, ((WINDOW_WIDTH // 2) - (105 * SCALE), (WINDOW_HEIGHT // 2) - (25 * SCALE)))
+        screen.blit(food_apple, ((WINDOW_WIDTH // 2) + (75 * SCALE), (WINDOW_HEIGHT // 2) - (50 * SCALE)))
 
         button_heal_1.draw(screen)
         button_heal_all.draw(screen)
@@ -983,7 +1061,7 @@ def draw_state(state):
                         button_new_game.color = BLACK
 
             screen.blit(bg_title, rect_bg)
-            screen.blit(txt_game_over, rect_title)
+            screen.blit(txt_game_over, rect_game_over)
             txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
             rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
             screen.blit(txt_score, rect_score)
@@ -1018,7 +1096,7 @@ def draw_state(state):
                         button_new_game.color = BLACK
 
             screen.blit(bg_title, rect_bg)
-            screen.blit(txt_game_win, rect_title)
+            screen.blit(txt_game_win, rect_game_win)
             txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
             rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
             screen.blit(txt_score, rect_score)

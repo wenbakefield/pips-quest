@@ -98,17 +98,17 @@ def choose_enemy_health_pool(difficulty):
 
 def choose_enemy_power_pool(difficulty):
     if difficulty < 15:
-        return [[2, 0.33],
-                [3, 0.33],
-                [4, 0.33]]
+        return [[2, 0.20],
+                [3, 0.40],
+                [4, 0.40]]
     if difficulty == 15:
         return [[3, 0.33],
                 [4, 0.33],
                 [5, 0.33]]
     if difficulty > 15:
-        return [[4, 0.33],
-                [5, 0.33],
-                [6, 0.33]]
+        return [[4, 0.40],
+                [5, 0.40],
+                [6, 0.20]]
 
 def choose_player_element_pool():
     return [["F", 0.23],

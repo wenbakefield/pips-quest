@@ -1,7 +1,8 @@
+Make sure to change your preferences in options.ini!
+
 Tutorial:
 
-You will play as a hamster mage trying to collect as much gold as possible.
-You earn gold by defeating other creatures who are trying to stop you.
+You will play as a hamster wizard, journeying through the land, defeating demonic critters who are trying to stop you.
 
 You will have a collection of runes for each encounter that you can use to craft your spell.
 If you are unsatisfied with the hand that you were dealt, you can reroll it once per turn using the reroll button.
@@ -26,7 +27,8 @@ I1 F2 A? S4 F3
 A cast button will appear once you have crafted a valid spell.
 Runes that you don't use will remain in your hand for the current battle, but will be rerolled for the next battle.
 
-You will journey through five areas, with three encounters in each.
+You will journey through five areas, with three encounters in each, with a final boss in the sixth area.
+The game will automatically save between each area.
 At the end of each area, you will come across a shop.
 
 If you are running low on health, you can spend your gold to heal.

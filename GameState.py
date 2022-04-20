@@ -233,7 +233,7 @@ class GameState:
         self.current_area = Area(self.area_num, "none")
         self.next_area1 = "none"
         self.next_area2 = "none"
-        self.state = "shop"
+        self.state = "title"
         self.random_state = random.getstate()
         self.turn_result = []
         self.rerolls = 1

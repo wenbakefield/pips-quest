@@ -1,7 +1,7 @@
 from GameState import GameState
 from Rune import Rune
 
-import pygame, sys, random, os, configparser, pickle
+import pygame, sys, random, os, statistics, configparser, pickle
 from pygame.locals import *
 pygame.init()
 
@@ -623,11 +623,20 @@ def draw_enemy(enemy_name):
 
 def draw_text_box(string_list, lines):
     if string_list:
-        space = 0
+        space = 7
+        line_num = 0
         for line in range(lines):
             txt_line = font_text.render(str(string_list[line]), False, WHITE, BLACK)
-            screen.blit(txt_line, (SCALE, (32 + space) * SCALE))
-            space += 10
+            rect_line = txt_line.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 8))
+            rect_line = rect_line.move((0, line_num * space * SCALE))
+            screen.blit(txt_line, rect_line)
+            line_num += 1
+
+def draw_text_center(text, x, y):
+    txt = font_text.render(str(text), False, WHITE, BLACK)
+    rect = txt.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 4))
+    rect = rect.move((x, y))
+    screen.blit(txt, rect)
 
 def draw_rune_buttons(rune_button_list, text, pos_x, pos_y):
     global screen
@@ -735,7 +744,7 @@ def draw_state(state):
         screen.blit(txt_fork, rect_subtitle)
 
         txt_current_area = font_subtitle.render("Area " + str(game.area_num) + "-" + str(game.encounter_num), False, WHITE, BLACK)
-        screen.blit(txt_current_area, (255 * SCALE, (1 * SCALE)))
+        screen.blit(txt_current_area, (258 * SCALE, (1 * SCALE)))
 
         button_fork_left.draw(screen)
         button_fork_right.draw(screen)
@@ -757,7 +766,7 @@ def draw_state(state):
                     play_music('music_encounter.mp3')
                 else:
                     play_music('music_boss_encounter.mp3')
-                pygame.time.set_timer(pygame.USEREVENT + 2, 3750, 1)
+                pygame.time.set_timer(pygame.USEREVENT + 2, 3500, 1)
                 game.state = "encounter_start"
 
         draw_background(game.get_current_area_biome())
@@ -852,7 +861,7 @@ def draw_state(state):
         screen.blit(txt_player_spell, (161 * SCALE, WINDOW_HEIGHT - (31 * SCALE)))
 
         txt_current_area = font_subtitle.render("Area " + str(game.area_num) + "-" + str(game.encounter_num), False, WHITE, BLACK)
-        screen.blit(txt_current_area, (255 * SCALE, (1 * SCALE)))
+        screen.blit(txt_current_area, (258 * SCALE, (1 * SCALE)))
 
         hand_rune_buttons = draw_rune_buttons(game.player_state.current_hand, "+", 120, 59)
         spell_rune_buttons = draw_rune_buttons(game.player_state.current_spell, "-", -39, 59)
@@ -915,9 +924,11 @@ def draw_state(state):
                             game.give_current_enemy_gold_to_player()
                             if game.area_num <= 5:
                                 play_music('music_win.mp3')
+                                game.log_battle()
                                 game.state = "encounter_win"
                             else:
                                 play_music('music_boss_win.mp3')
+                                game.log_battle()
                                 game.state = "game_win"
                         else:
                             lines = 0
@@ -960,6 +971,12 @@ def draw_state(state):
 
             draw_background(game.get_current_area_biome())
             screen.blit(txt_game_win, rect_game_win)
+
+            space = 7
+
+            draw_text_center("The " + str(game.get_current_enemy_name()) + " was defeated!", 0, space * 1 * SCALE)
+            draw_text_center("You got " + str(game.get_current_enemy_gold()) + " gold!", 0, space * 2 * SCALE)
+
             button_continue.draw(screen)
             pygame.display.flip()
 
@@ -1009,19 +1026,17 @@ def draw_state(state):
                 else:
                     button_continue.color = BLACK
 
-
         screen.blit(bg_shop, rect_bg)
 
         moving_sprites.draw(screen)
         moving_sprites.update(0.03)
 
         screen.blit(fg_shop, rect_bg)
+        screen.blit(txt_shop, rect_shop)
 
         txt_player_name = font_subtitle.render("Pip", False, WHITE, BLACK)
         txt_player_stats = font_text.render(game.get_current_player_stats(), False, WHITE, BLACK)
-
-        screen.blit(txt_shop, rect_shop)
-
+        
         screen.blit(txt_player_name, (1 * SCALE, WINDOW_HEIGHT - (45 * SCALE)))
         screen.blit(txt_player_stats, (1 * SCALE, WINDOW_HEIGHT - (21 * SCALE)))
 
@@ -1060,11 +1075,27 @@ def draw_state(state):
                     else:
                         button_new_game.color = BLACK
 
-            screen.blit(bg_title, rect_bg)
+            screen.fill(BLACK)
             screen.blit(txt_game_over, rect_game_over)
-            txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
-            rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
-            screen.blit(txt_score, rect_score)
+
+            space = 7
+            if game.state == "game_over":
+                draw_text_center("Score: " + str(round(game.player_state.get_current_gold() * game.difficulty)), 0, space * 1 * SCALE)
+                draw_text_center("Seed: " + str(game.seed), 0, space * 2 * SCALE)
+                draw_text_center("Total Damage Dealt: " + str(sum(game.encounters_damage_dealt)), 0, space * 4 * SCALE)
+                draw_text_center("Total Damage Taken: " + str(sum(game.encounters_damage_taken)), 0, space * 5 * SCALE)
+                draw_text_center("Total Damage Blocked: " + str(sum(game.encounters_damage_blocked)), 0, space * 6 * SCALE)
+                draw_text_center("Average Damage Dealt: " + str(round(statistics.mean(game.encounters_damage_dealt))), 0, space * 8 * SCALE)
+                draw_text_center("Average Damage Taken: " + str(round(statistics.mean(game.encounters_damage_taken))), 0, space * 9 * SCALE)
+                draw_text_center("Average Damage Blocked: " + str(round(statistics.mean(game.encounters_damage_blocked))), 0, space * 10 * SCALE)
+                draw_text_center("Total Critters Defeated: " + str(len(game.enemies_defeated)), 0, space * 12 * SCALE)
+                draw_text_center("Bats: " + str(game.enemies_defeated.count("Bat")), 0, space * 13 * SCALE)
+                draw_text_center("Bullfrogs: " + str(game.enemies_defeated.count("Bullfrog")), 0, space * 14 * SCALE)
+                draw_text_center("Bunnies: " + str(game.enemies_defeated.count("Bunny")), 0, space * 15 * SCALE)
+                draw_text_center("Rats: " + str(game.enemies_defeated.count("Rat")), 0, space * 16 * SCALE)
+                draw_text_center("Spiders: " + str(game.enemies_defeated.count("Spider")), 0, space * 17 * SCALE)
+                draw_text_center("Snakes: " + str(game.enemies_defeated.count("Snake")), 0, space * 18 * SCALE)
+
             button_new_game.draw(screen)
             pygame.display.flip()
 
@@ -1095,11 +1126,27 @@ def draw_state(state):
                     else:
                         button_new_game.color = BLACK
 
-            screen.blit(bg_title, rect_bg)
+            screen.fill(BLACK)
             screen.blit(txt_game_win, rect_game_win)
-            txt_score = font_subtitle.render("Score: " + str(game.player_state.get_current_gold()), False, WHITE, None)
-            rect_score = txt_score.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
-            screen.blit(txt_score, rect_score)
+
+            space = 7
+            if game.state == "game_win":
+                draw_text_center("Score: " + str(round(game.player_state.get_current_gold() * game.difficulty)), 0, space * 1 * SCALE)
+                draw_text_center("Seed: " + str(game.seed), 0, space * 2 * SCALE)
+                draw_text_center("Total Damage Dealt: " + str(sum(game.encounters_damage_dealt)), 0, space * 4 * SCALE)
+                draw_text_center("Total Damage Taken: " + str(sum(game.encounters_damage_taken)), 0, space * 5 * SCALE)
+                draw_text_center("Total Damage Blocked: " + str(sum(game.encounters_damage_blocked)), 0, space * 6 * SCALE)
+                draw_text_center("Average Damage Dealt: " + str(round(statistics.mean(game.encounters_damage_dealt))), 0, space * 8 * SCALE)
+                draw_text_center("Average Damage Taken: " + str(round(statistics.mean(game.encounters_damage_taken))), 0, space * 9 * SCALE)
+                draw_text_center("Average Damage Blocked: " + str(round(statistics.mean(game.encounters_damage_blocked))), 0, space * 10 * SCALE)
+                draw_text_center("Total Critters Defeated: " + str(len(game.enemies_defeated)), 0, space * 12 * SCALE)
+                draw_text_center("Bats: " + str(game.enemies_defeated.count("Bat")), 0, space * 13 * SCALE)
+                draw_text_center("Bullfrogs: " + str(game.enemies_defeated.count("Bullfrog")), 0, space * 14 * SCALE)
+                draw_text_center("Bunnies: " + str(game.enemies_defeated.count("Bunny")), 0, space * 15 * SCALE)
+                draw_text_center("Rats: " + str(game.enemies_defeated.count("Rat")), 0, space * 16 * SCALE)
+                draw_text_center("Spiders: " + str(game.enemies_defeated.count("Spider")), 0, space * 17 * SCALE)
+                draw_text_center("Snakes: " + str(game.enemies_defeated.count("Snake")), 0, space * 18 * SCALE)
+
             button_new_game.draw(screen)
             pygame.display.flip()
 

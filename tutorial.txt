@@ -4,7 +4,7 @@ Tutorial:
 
 You will play as a hamster wizard, journeying through the land, encountering demonic critters who are trying to stop you.
 The critters are held captive under a spell, something seems to be controlling them.
-You've detected a high concentration of dark energy, emanating from Conda Cavern in the East.
+You've detected a high concentration of arcane energy, emanating from Conda Cavern in the East.
 What could it be?
 
 You will have a collection of runes for each encounter that you can use to craft your spell.

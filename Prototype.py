@@ -1,3 +1,4 @@
+import os
 import random
 import requests
 import statistics
@@ -10,6 +11,9 @@ from Enemy import Enemy
 from Player import Player
 from Rune import Rune
 from Encounter import Encounter
+
+VOLUME_SFX = float(0.2)
+VOLUME_MUSIC = float(0.3)
 
 # initialize pools
 def enemy_level_pool_init(difficulty):
@@ -357,17 +361,20 @@ def play_enemy_music(species):
     play_music_loop(file_name)
 
 def play_music_loop(file_name):
-    pygame.mixer.music.load(file_name)
+    pygame.mixer.music.set_volume(VOLUME_MUSIC)
+    pygame.mixer.music.load(os.path.join('sounds', file_name))
     pygame.mixer.music.play(-1)
 
 def play_music(file_name):
-    pygame.mixer.music.load(file_name)
+    pygame.mixer.music.set_volume(VOLUME_MUSIC)
+    pygame.mixer.music.load(os.path.join('sounds', file_name))
     pygame.mixer.music.play()
 
 def stop_music():
     pygame.mixer.music.stop()
 
 def play_sound(sound):
+    sound.set_volume(VOLUME_SFX)
     sound.play()
 
 # Testing Area
@@ -375,18 +382,18 @@ while True:
 
     pygame.init()
     pygame.mixer.init()
-    sound_damage = pygame.mixer.Sound('sound_damage.wav')
+    sound_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_damage.wav'))
 
-    sound_enemy_attack = pygame.mixer.Sound('sound_enemy_attack.wav')
-    sound_enemy_defend = pygame.mixer.Sound('sound_enemy_defend.wav')
+    sound_enemy_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_attack.wav'))
+    sound_enemy_defend = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_attack.wav'))
 
-    sound_player_attack = pygame.mixer.Sound('sound_player_attack.wav')
-    sound_player_defend = pygame.mixer.Sound('sound_player_defend.wav')
+    sound_player_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_attack.wav'))
+    sound_player_defend = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_defend.wav'))
 
-    sound_player_heal = pygame.mixer.Sound('sound_player_heal.wav')
-    sound_player_select = pygame.mixer.Sound('sound_player_select.wav')
-    sound_player_spell = pygame.mixer.Sound('sound_player_spell.wav')
-    sound_player_sell = pygame.mixer.Sound('sound_player_sell.wav')
+    sound_player_heal = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_heal.wav'))
+    sound_player_select = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_select.wav'))
+    sound_player_spell = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_spell.wav'))
+    sound_player_sell = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_sell.wav'))
 
     enemy_level_pool = []
     enemy_species_pool = []
@@ -412,7 +419,7 @@ while True:
     game_battle_length_history = []
 
     print("\n")
-    print("Welcome to the Hamster Game Demo!")
+    print("Pip's Quest v0.1.0")
     play_music_loop('music_title.mp3')
     print("\n")
 

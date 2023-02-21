@@ -1,7 +1,5 @@
 import random
-import requests
 import pickle
-import statistics
 
 from pygame.locals import *
 
@@ -196,10 +194,9 @@ def string_to_spell(spell_str):
     return spell
 
 def choose_seed():
-    word_site = "https://www.mit.edu/~ecprice/wordlist.10000"
-    response = requests.get(word_site)
-    words = response.content.splitlines()
-    game_seed = str((random.choice(words)).decode('UTF-8'))
+    seedlist = open("seedlist.txt")
+    words=seedlist.read().split('\n')
+    game_seed = str(random.choice(words))
     return game_seed
 
 class GameState:

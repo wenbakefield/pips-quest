@@ -2,7 +2,7 @@
 
 A roguelite involving a hamster wizard, cursed critters, and an evil snake. Inspired by EarthBound and Slay The Spire. Hastily hacked together in Python.
 
-Download the [latest release](https://github.com/wenbakefield/PipsQuest/releases) to play!
+Play [online](https://benwakefield.dev/pips-quest) or download the [latest release](https://github.com/wenbakefield/PipsQuest/releases)!
 
 https://user-images.githubusercontent.com/8831999/216470287-0950ce77-a133-4106-b28a-7875c05fc3d7.mp4
 

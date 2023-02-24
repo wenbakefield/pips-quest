@@ -262,145 +262,15 @@ mob_snake = pygame.image.load(os.path.join('images', 'mob_snake', 'mob_snake.png
 mob_snake = pygame.transform.scale(mob_snake, (160 * SCALE, 120 * SCALE))
 
 # sprites
-
-class Bat(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y, scale, type):
         super().__init__()
         self.idle_sprites = []
         self.is_animating = True
+
         for i in range(1, 5):
-            image = pygame.image.load(os.path.join('images', 'mob_bat', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
-            self.idle_sprites.append(image)
-        self.current_sprite = 0
-        self.image = self.idle_sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-        self.rect = self.rect.move((pos_x, pos_y))
-
-    def animate(self):
-        self.is_animating = True
-
-    def update(self, speed):
-        if self.is_animating == True:
-            self.current_sprite += speed
-            if self.current_sprite >= len(self.idle_sprites):
-                self.current_sprite = 0
-                self.is_animating = True
-            self.image = self.idle_sprites[int(self.current_sprite)]
-
-class Bullfrog(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__()
-        self.idle_sprites = []
-        self.is_animating = True
-        for i in range(1, 5):
-            image = pygame.image.load(os.path.join('images', 'mob_bullfrog', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
-            self.idle_sprites.append(image)
-        self.current_sprite = 0
-        self.image = self.idle_sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-        self.rect = self.rect.move((pos_x, pos_y))
-
-    def animate(self):
-        self.is_animating = True
-
-    def update(self, speed):
-        if self.is_animating == True:
-            self.current_sprite += speed
-            if self.current_sprite >= len(self.idle_sprites):
-                self.current_sprite = 0
-                self.is_animating = True
-            self.image = self.idle_sprites[int(self.current_sprite)]
-
-class Meerkat(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__()
-        self.idle_sprites = []
-        self.is_animating = True
-        for i in range(1, 5):
-            image = pygame.image.load(os.path.join('images', 'mob_meerkat', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
-            self.idle_sprites.append(image)
-        self.current_sprite = 0
-        self.image = self.idle_sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-        self.rect = self.rect.move((pos_x, pos_y))
-
-    def animate(self):
-        self.is_animating = True
-
-    def update(self, speed):
-        if self.is_animating == True:
-            self.current_sprite += speed
-            if self.current_sprite >= len(self.idle_sprites):
-                self.current_sprite = 0
-                self.is_animating = True
-            self.image = self.idle_sprites[int(self.current_sprite)]
-
-class Rat(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__()
-        self.idle_sprites = []
-        self.is_animating = True
-        for i in range(1, 5):
-            image = pygame.image.load(os.path.join('images', 'mob_rat', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
-            self.idle_sprites.append(image)
-        self.current_sprite = 0
-        self.image = self.idle_sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-        self.rect = self.rect.move((pos_x, pos_y))
-
-    def animate(self):
-        self.is_animating = True
-
-    def update(self, speed):
-        if self.is_animating == True:
-            self.current_sprite += speed
-            if self.current_sprite >= len(self.idle_sprites):
-                self.current_sprite = 0
-                self.is_animating = True
-            self.image = self.idle_sprites[int(self.current_sprite)]
-
-class Snake(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__()
-        self.idle_sprites = []
-        self.is_animating = True
-        for i in range(1, 5):
-            image = pygame.image.load(os.path.join('images', 'mob_snake', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (140 * SCALE, 140 * SCALE))
-            self.idle_sprites.append(image)
-        self.current_sprite = 0
-        self.image = self.idle_sprites[self.current_sprite]
-        self.rect = self.image.get_rect()
-        self.rect.center = (WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2)
-        self.rect = self.rect.move((pos_x, pos_y))
-
-    def animate(self):
-        self.is_animating = True
-
-    def update(self, speed):
-        if self.is_animating == True:
-            self.current_sprite += speed
-            if self.current_sprite >= len(self.idle_sprites):
-                self.current_sprite = 0
-                self.is_animating = True
-            self.image = self.idle_sprites[int(self.current_sprite)]
-
-class Spider(pygame.sprite.Sprite):
-    def __init__(self, pos_x, pos_y):
-        super().__init__()
-        self.idle_sprites = []
-        self.is_animating = True
-        for i in range(1, 5):
-            image = pygame.image.load(os.path.join('images', 'mob_spider', 'idle', str(i) + '.png')).convert_alpha()
-            image = pygame.transform.scale(image, (65 * SCALE, 65 * SCALE))
+            image = pygame.image.load(os.path.join('images', type, 'idle', str(i) + '.png')).convert_alpha()
+            image = pygame.transform.scale(image, (scale * 65 * SCALE, scale * 65 * SCALE))
             self.idle_sprites.append(image)
         self.current_sprite = 0
         self.image = self.idle_sprites[self.current_sprite]
@@ -612,17 +482,17 @@ def draw_background(biome):
 
 def draw_enemy(enemy_name):
     if enemy_name == "Bat":
-        moving_sprites.add(Bat(0, 0))
+        moving_sprites.add(Enemy(0, 0, 1, "mob_bat"))
     if enemy_name == "Bullfrog":
-        moving_sprites.add(Bullfrog(0, 25 * SCALE))
+        moving_sprites.add(Enemy(0, 25 * SCALE, 1, "mob_bullfrog"))
     if enemy_name == "Bunny":
-        moving_sprites.add(Meerkat(0, 25 * SCALE))
+        moving_sprites.add(Enemy(0, 25 * SCALE, 1, "mob_meerkat"))
     if enemy_name == "Rat":
-        moving_sprites.add(Rat(0, 25 * SCALE))
+        moving_sprites.add(Enemy(0, 25 * SCALE, 1, "mob_rat"))
     if enemy_name == "Spider":
-        moving_sprites.add(Spider(0, 25 * SCALE))
+        moving_sprites.add(Enemy(0, 25 * SCALE, 1, "mob_spider"))
     if enemy_name == "Snake":
-        moving_sprites.add(Snake(0, 0))
+        moving_sprites.add(Enemy(0, 0, 2, "mob_snake"))
 
 def draw_text_box(string_list, lines):
     if string_list:
@@ -661,11 +531,11 @@ def draw_rune_buttons(rune_button_list, text, pos_x, pos_y):
 
 def draw_state(state):
     global game
+    global SCALE
+    global TICK
     global hand_rune_buttons
     global spell_rune_buttons
-    global SCALE
     global lines
-    global TICK
     global time_in_seconds
     global time_cache
     if state == "title":

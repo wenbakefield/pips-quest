@@ -48,36 +48,36 @@ VOLUME_MUSIC = float(options_mus_vol)
 
 pygame.mixer.init()
 
-sound_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_damage.wav'))
-sound_smash = pygame.mixer.Sound(os.path.join('sounds', 'sound_smash.wav'))
-sound_help = pygame.mixer.Sound(os.path.join('sounds', 'sound_help.wav'))
-sound_mortal_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_mortal_damage.wav'))
+sound_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_damage.ogg'))
+sound_smash = pygame.mixer.Sound(os.path.join('sounds', 'sound_smash.ogg'))
+sound_help = pygame.mixer.Sound(os.path.join('sounds', 'sound_help.ogg'))
+sound_mortal_damage = pygame.mixer.Sound(os.path.join('sounds', 'sound_mortal_damage.ogg'))
 
-sound_enemy_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_attack.wav'))
-sound_enemy_die = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_die.wav'))
+sound_enemy_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_attack.ogg'))
+sound_enemy_die = pygame.mixer.Sound(os.path.join('sounds', 'sound_enemy_die.ogg'))
 
-sound_player_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_attack.wav'))
-sound_player_defend = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_defend.wav'))
+sound_player_attack = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_attack.ogg'))
+sound_player_defend = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_defend.ogg'))
 
-sound_player_heal = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_heal.wav'))
-sound_player_select = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_select.wav'))
-sound_player_spell = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_spell.wav'))
-sound_player_sell = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_sell.wav'))
+sound_player_heal = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_heal.ogg'))
+sound_player_select = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_select.ogg'))
+sound_player_spell = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_spell.ogg'))
+sound_player_sell = pygame.mixer.Sound(os.path.join('sounds', 'sound_player_sell.ogg'))
 
 def play_enemy_music(species):
     file_name = ''
     if species == "Bat":
-        file_name = 'music_bat.mp3'
+        file_name = 'music_bat.ogg'
     if species == "Bullfrog":
-        file_name = 'music_bullfrog.mp3'
+        file_name = 'music_bullfrog.ogg'
     if species == "Bunny":
-        file_name = 'music_meerkat.mp3'
+        file_name = 'music_meerkat.ogg'
     if species == "Rat":
-        file_name = 'music_rat.mp3'
+        file_name = 'music_rat.ogg'
     if species == "Spider":
-        file_name = 'music_spider.mp3'
+        file_name = 'music_spider.ogg'
     if species == "Snake":
-        file_name = 'music_boss.mp3'
+        file_name = 'music_boss.ogg'
     play_music_loop(file_name)
 
 def play_music_loop(file_name):
@@ -459,7 +459,7 @@ time_cache = 0
 # The main function that controls the game
 async def main () :
     running = True
-    play_music('music_title.mp3')
+    play_music('music_title.ogg')
     while running :
         draw_state(game.state)
         pygame.display.update()
@@ -553,11 +553,11 @@ def draw_state(state):
                     play_sound(sound_player_select)
                     game.choose_next_area_fork()
                     game.state = "fork"
-                    play_music_loop('music_wilderness.mp3')
+                    play_music_loop('music_wilderness.ogg')
 
                 if button_load_game.isOver(pos):
                     play_sound(sound_player_select)
-                    play_music_loop('music_wilderness.mp3')
+                    play_music_loop('music_wilderness.ogg')
                     with open("save", "rb") as f:
                         game = pickle.load(f)
                     game.load()
@@ -600,13 +600,13 @@ def draw_state(state):
                     play_sound(sound_player_select)
                     time_cache = time_in_seconds
                     game.next_area(1)
-                    play_music_loop('music_wilderness.mp3')
+                    play_music_loop('music_wilderness.ogg')
                     game.state = "wandering"
                 if button_fork_right.isOver(pos):
                     play_sound(sound_player_select)
                     time_cache = time_in_seconds
                     game.next_area(2)
-                    play_music_loop('music_wilderness.mp3')
+                    play_music_loop('music_wilderness.ogg')
                     game.state = "wandering"
 
             if event.type == MOUSEMOTION :
@@ -644,9 +644,9 @@ def draw_state(state):
         if time_in_seconds >= time_cache + 3 :
             moving_sprites.add(EncounterStart(0, 0))
             if game.area_num <= 5:
-                play_music('music_encounter.mp3')
+                play_music('music_encounter.ogg')
             else:
-                play_music('music_boss_encounter.mp3')
+                play_music('music_boss_encounter.ogg')
             time_cache = time_in_seconds
             game.state = "encounter_start"
 
@@ -802,18 +802,18 @@ def draw_state(state):
             if (time_in_seconds == time_cache + 6) and (lines == 3) :
                 if game.player_is_dead():
                             moving_sprites.empty()
-                            play_music('music_game_over.mp3')
+                            play_music('music_game_over.ogg')
                             game.state = "game_over"
                 elif game.current_enemy_is_dead():
                     lines = 0
                     moving_sprites.empty()
                     game.give_current_enemy_gold_to_player()
                     if game.area_num <= 5:
-                        play_music('music_win.mp3')
+                        play_music('music_win.ogg')
                         game.log_battle()
                         game.state = "encounter_win"
                     else:
-                        play_music('music_boss_win.mp3')
+                        play_music('music_boss_win.ogg')
                         game.log_battle()
                         game.state = "game_win"
                 else:
@@ -845,11 +845,11 @@ def draw_state(state):
                         play_sound(sound_player_select)
                         if game.encounter_num >= 3:
                             moving_sprites.add(Dog(0, 25 * SCALE))
-                            play_music_loop('music_shop.mp3')
+                            play_music_loop('music_shop.ogg')
                             game.state = "shop"
                         else:
                             time_cache = time_in_seconds
-                            play_music_loop('music_wilderness.mp3')
+                            play_music_loop('music_wilderness.ogg')
                             game.state = "wandering"
 
                 if event.type == MOUSEMOTION :
@@ -894,14 +894,14 @@ def draw_state(state):
                     if game.area_num < 5:
                         moving_sprites.empty()
                         game.choose_next_area_fork()
-                        play_music_loop('music_wilderness.mp3')
+                        play_music_loop('music_wilderness.ogg')
                         game.state = "fork"
                         game.save()
                     else:
                         moving_sprites.empty()
                         time_cache = time_in_seconds
                         game.next_area(3)
-                        play_music_loop('music_wilderness.mp3')
+                        play_music_loop('music_wilderness.ogg')
                         game.state = "wandering"
 
             if event.type == MOUSEMOTION :
@@ -955,7 +955,7 @@ def draw_state(state):
                 if event.type == MOUSEBUTTONDOWN :
                     if button_new_game.isOver(pos):
                         play_sound(sound_player_select)
-                        play_music('music_title.mp3')
+                        play_music('music_title.ogg')
                         if os.path.exists("save"):
                             os.remove("save")
                         game = GameState(options_seed, options_difficulty, options_adaptive_difficulty)
@@ -1006,7 +1006,7 @@ def draw_state(state):
                 if event.type == MOUSEBUTTONDOWN :
                     if button_new_game.isOver(pos):
                         play_sound(sound_player_select)
-                        play_music('music_title.mp3')
+                        play_music('music_title.ogg')
                         if os.path.exists("save"):
                             os.remove("save")
                         game = GameState(options_seed, options_difficulty, options_adaptive_difficulty)
